@@ -1,11 +1,13 @@
 ---
 import product from '../data/product.json';
+import ShippingCalculator from './ShippingCalculator.astro';
+import variantsData from '../data/variants.json';
 ---
 
 <section id="comprar" class="relative w-full py-24 md:py-32 lg:py-40">
   <div class="mx-auto max-w-[1400px] px-5 md:px-10">
     <div class="grid grid-cols-1 gap-12 md:grid-cols-12 md:gap-10" data-reveal>
-      <!-- Left: editorial portrait image, asymmetric thin frame, no heavy shadow -->
+      <!-- Left: editorial portrait image -->
       <div class="md:col-span-6">
         <div class="overflow-hidden asymmetric-frame bg-bone-100 rounded-tl-[36px] rounded-tr-[6px] rounded-bl-[6px] rounded-br-[36px]">
           <img
@@ -20,7 +22,7 @@ import product from '../data/product.json';
         </div>
       </div>
 
-      <!-- Right: price + buy -->
+      <!-- Right: title + dynamic price + variant selectors + buy -->
       <div class="flex flex-col justify-center md:col-span-6 md:pl-6">
         <p class="mb-5 inline-flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.22em] text-copper">
           <span aria-hidden="true" class="block h-px w-8 bg-copper"></span>
@@ -34,82 +36,307 @@ import product from '../data/product.json';
           {product.description}
         </p>
 
-        <!-- Price block -->
+        <!-- Dynamic price block -->
         <div class="mt-10 border-t border-bone-200 pt-8">
           <div class="flex items-baseline gap-4">
-            <span class="font-display text-[56px] font-light leading-none tracking-[-0.02em] text-ink md:text-[72px]">
+            <span
+              id="dynamic-price"
+              class="font-display text-[56px] font-light leading-none tracking-[-0.02em] text-ink md:text-[72px]"
+            >
               {product.price.formatted}
             </span>
             <span class="text-[13px] uppercase tracking-[0.18em] text-ink-mute">ARS</span>
           </div>
-          <p class="mt-3 text-[14px] text-ink-soft">{product.price.installments}</p>
+          <p
+            id="dynamic-config"
+            class="mt-3 font-display text-[18px] italic text-copper"
+          >
+            {variantsData.models[0].label}
+          </p>
+          <p id="dynamic-installments" class="mt-2 text-[14px] text-ink-soft">
+            {product.price.installments}
+          </p>
         </div>
 
-        <!-- Quantity + Buy -->
+        <!-- VARIANT SELECTORS -->
         <form
-          id="checkout-form"
-          class="mt-8 flex flex-col gap-4"
-          aria-describedby="checkout-feedback"
+          id="variant-form"
+          class="mt-8 flex flex-col gap-6"
+          aria-describedby="variant-feedback"
         >
-          <div class="flex flex-wrap items-center gap-3">
-            <label
-              for="qty"
-              class="text-[12px] font-medium uppercase tracking-[0.18em] text-ink-soft"
-            >
-              Cantidad
-            </label>
-            <div class="inline-flex items-center overflow-hidden rounded-full border border-bone-200 bg-bone-100">
-              <button
-                type="button"
-                id="qty-dec"
-                aria-label="Disminuir cantidad"
-                class="cta-push h-10 w-10 text-lg text-ink-soft hover:bg-bone hover:text-forest-700"
-              >
-                −
-              </button>
-              <input
-                id="qty"
-                name="quantity"
-                type="number"
-                min="1"
-                max="10"
-                value="1"
-                class="h-10 w-14 border-none bg-transparent text-center text-[15px] font-medium text-ink focus:outline-none focus:ring-0"
-              />
-              <button
-                type="button"
-                id="qty-inc"
-                aria-label="Aumentar cantidad"
-                class="cta-push h-10 w-10 text-lg text-ink-soft hover:bg-bone hover:text-forest-700"
-              >
-                +
-              </button>
+          <!-- Modelo -->
+          <fieldset>
+            <legend class="mb-3 flex items-baseline justify-between gap-2">
+              <span class="text-[12px] font-medium uppercase tracking-[0.18em] text-ink-soft">
+                Modelo
+              </span>
+              <span class="text-[11px] uppercase tracking-[0.18em] text-ink-mute">obligatorio</span>
+            </legend>
+            <div class="grid grid-cols-2 gap-3 md:grid-cols-4">
+              {
+                variantsData.models.map((m) => (
+                  <label
+                    data-variant-card
+                    data-dim="model"
+                    data-value={m.id}
+                    class="variant-card group cursor-pointer rounded-tl-[14px] rounded-br-[14px] border border-bone-200 bg-bone-100/60 p-3 transition-colors duration-300 hover:border-copper/50 hover:bg-bone-100"
+                  >
+                    <input
+                      type="radio"
+                      name="model"
+                      value={m.id}
+                      class="sr-only"
+                      checked={m.id === variantsData.models[0].id}
+                    />
+                    <span class="block font-display text-[16px] leading-tight text-ink">
+                      {m.label}
+                    </span>
+                    <span class="mt-1 block text-[11px] leading-[1.4] text-ink-mute">
+                      {m.description}
+                    </span>
+                    <span class="mt-2 block text-[11px] font-medium uppercase tracking-[0.16em] text-copper">
+                      {m.modifierLabel}
+                    </span>
+                  </label>
+                ))
+              }
             </div>
-          </div>
+          </fieldset>
 
-          <button
-            type="submit"
-            id="buy-now"
-            class="group cta-push inline-flex w-full items-center justify-center gap-3 rounded-full bg-forest-700 px-8 py-4 text-[15px] font-medium tracking-wide text-bone hover:bg-forest-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest-700 disabled:cursor-not-allowed disabled:opacity-70"
-          >
-            <span id="buy-label">Comprar ahora</span>
-            <span
-              aria-hidden="true"
-              id="buy-arrow"
-              class="inline-flex h-7 w-7 items-center justify-center rounded-full bg-bone/20 text-[12px] leading-none transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-x-0.5"
-            >
-              ↗
-            </span>
-          </button>
+          <!-- Madera -->
+          <fieldset id="wood-fieldset">
+            <legend class="mb-3 flex items-baseline justify-between gap-2">
+              <span class="text-[12px] font-medium uppercase tracking-[0.18em] text-ink-soft">
+                Madera
+              </span>
+              <span class="text-[11px] uppercase tracking-[0.18em] text-ink-mute">curada en taller</span>
+            </legend>
+            <div class="grid grid-cols-2 gap-3 md:grid-cols-4">
+              {
+                variantsData.woods.map((w) => (
+                  <label
+                    data-variant-card
+                    data-dim="wood"
+                    data-value={w.id}
+                    class="variant-card group cursor-pointer rounded-tl-[14px] rounded-br-[14px] border border-bone-200 bg-bone-100/60 p-3 transition-colors duration-300 hover:border-copper/50 hover:bg-bone-100"
+                  >
+                    <input
+                      type="radio"
+                      name="wood"
+                      value={w.id}
+                      class="sr-only"
+                      checked={w.id === variantsData.woods[0].id}
+                    />
+                    <span class="block font-display text-[16px] leading-tight text-ink">
+                      {w.label}
+                    </span>
+                    <span class="mt-1 block text-[11px] leading-[1.4] text-ink-mute">
+                      {w.description}
+                    </span>
+                    <span class="mt-2 block text-[11px] font-medium uppercase tracking-[0.16em] text-copper">
+                      {w.modifierLabel}
+                    </span>
+                  </label>
+                ))
+              }
+            </div>
+          </fieldset>
 
-          <p
-            id="checkout-feedback"
+          <!-- Virola -->
+          <fieldset id="ring-fieldset">
+            <legend class="mb-3 flex items-baseline justify-between gap-2">
+              <span class="text-[12px] font-medium uppercase tracking-[0.18em] text-ink-soft">
+                Virola
+              </span>
+              <span class="text-[11px] uppercase tracking-[0.18em] text-ink-mute">terminación manual</span>
+            </legend>
+            <div class="grid grid-cols-2 gap-3 md:grid-cols-3">
+              {
+                variantsData.rings.map((r) => (
+                  <label
+                    data-variant-card
+                    data-dim="ring"
+                    data-value={r.id}
+                    class="variant-card group cursor-pointer rounded-tl-[14px] rounded-br-[14px] border border-bone-200 bg-bone-100/60 p-3 transition-colors duration-300 hover:border-copper/50 hover:bg-bone-100"
+                  >
+                    <input
+                      type="radio"
+                      name="ring"
+                      value={r.id}
+                      class="sr-only"
+                      checked={r.id === variantsData.rings[0].id}
+                    />
+                    <span class="block font-display text-[16px] leading-tight text-ink">
+                      {r.label}
+                    </span>
+                    <span class="mt-1 block text-[11px] leading-[1.4] text-ink-mute">
+                      {r.description}
+                    </span>
+                    <span class="mt-2 block text-[11px] font-medium uppercase tracking-[0.16em] text-copper">
+                      {r.modifierLabel}
+                    </span>
+                  </label>
+                ))
+              }
+            </div>
+          </fieldset>
+
+          <!-- Grabado -->
+          <fieldset>
+            <legend class="mb-3 flex items-baseline justify-between gap-2">
+              <span class="text-[12px] font-medium uppercase tracking-[0.18em] text-ink-soft">
+                Grabado
+              </span>
+              <span class="text-[11px] uppercase tracking-[0.18em] text-ink-mute">opcional</span>
+            </legend>
+            <div class="grid grid-cols-1 gap-3 md:grid-cols-3">
+              {
+                variantsData.engravings.map((e) => (
+                  <label
+                    data-variant-card
+                    data-dim="engraving"
+                    data-value={e.id}
+                    class="variant-card group cursor-pointer rounded-tl-[14px] rounded-br-[14px] border border-bone-200 bg-bone-100/60 p-3 transition-colors duration-300 hover:border-copper/50 hover:bg-bone-100"
+                  >
+                    <input
+                      type="radio"
+                      name="engraving"
+                      value={e.id}
+                      class="sr-only"
+                      checked={e.id === variantsData.engravings[0].id}
+                    />
+                    <span class="block font-display text-[16px] leading-tight text-ink">
+                      {e.label}
+                    </span>
+                    <span class="mt-1 block text-[11px] leading-[1.4] text-ink-mute">
+                      {e.description}
+                    </span>
+                    <span class="mt-2 block text-[11px] font-medium uppercase tracking-[0.16em] text-copper">
+                      {e.modifierLabel}
+                    </span>
+                  </label>
+                ))
+              }
+            </div>
+            <div id="engraving-text-wrap" class="mt-3 hidden">
+              <label for="engraving-text" class="flex flex-col gap-1.5">
+                <span class="text-[12px] font-medium uppercase tracking-[0.18em] text-ink-soft">
+                  Texto a grabar
+                </span>
+                <textarea
+                  id="engraving-text"
+                  rows="2"
+                  maxlength="24"
+                  placeholder="Ej: MRA"
+                  class="w-full rounded-tl-[12px] rounded-br-[12px] border border-bone-200 bg-bone px-4 py-3 text-[15px] leading-[1.5] text-ink placeholder:text-ink-mute/60 focus:border-copper focus:outline-none focus:ring-1 focus:ring-copper"
+                ></textarea>
+                <span id="engraving-counter" class="self-end text-[11px] uppercase tracking-[0.18em] text-ink-mute">
+                  0/3
+                </span>
+              </label>
+            </div>
+          </fieldset>
+
+          <!-- Out of stock alert -->
+          <div
+            id="variant-feedback"
             role="status"
             aria-live="polite"
-            class="min-h-[1.25rem] text-[13px] text-ink-soft"
+            class="hidden rounded-tl-[14px] rounded-br-[14px] border border-copper/40 bg-bone-50/60 px-5 py-4 text-[14px] leading-[1.6] text-ink-soft"
           >
-            Pago procesado por Mercado Pago en entorno de prueba.
-          </p>
+            <p class="font-display text-[18px] italic text-copper">
+              Esta combinación está agotada.
+            </p>
+            <p id="variant-feedback-reason" class="mt-1 text-[13px] text-ink-soft">
+              Probá otra madera.
+            </p>
+          </div>
+
+          <!-- Shipping calculator -->
+          <ShippingCalculator />
+
+          <!-- Resumen final -->
+          <div class="rounded-tl-[18px] rounded-br-[18px] border border-bone-200 bg-bone-100/60 px-5 py-4">
+            <dl class="grid gap-2 text-[14px]">
+              <div class="flex items-baseline justify-between gap-3">
+                <dt class="text-ink-soft">Mate</dt>
+                <dd id="summary-product" class="font-medium text-ink">{product.price.formatted}</dd>
+              </div>
+              <div class="flex items-baseline justify-between gap-3">
+                <dt class="text-ink-soft">Envío</dt>
+                <dd id="summary-shipping" class="font-medium text-ink-mute">a calcular</dd>
+              </div>
+              <div class="mt-2 flex items-baseline justify-between gap-3 border-t border-bone-200 pt-3">
+                <dt class="text-[12px] font-medium uppercase tracking-[0.18em] text-ink-soft">Total</dt>
+                <dd id="summary-total" class="font-display text-[26px] font-light text-ink">
+                  {product.price.formatted}
+                </dd>
+              </div>
+            </dl>
+          </div>
+
+          <!-- Quantity + Buy -->
+          <div class="flex flex-col gap-4">
+            <div class="flex flex-wrap items-center gap-3">
+              <label
+                for="qty"
+                class="text-[12px] font-medium uppercase tracking-[0.18em] text-ink-soft"
+              >
+                Cantidad
+              </label>
+              <div class="inline-flex items-center overflow-hidden rounded-full border border-bone-200 bg-bone-100">
+                <button
+                  type="button"
+                  id="qty-dec"
+                  aria-label="Disminuir cantidad"
+                  class="cta-push h-10 w-10 text-lg text-ink-soft hover:bg-bone hover:text-forest-700"
+                >
+                  −
+                </button>
+                <input
+                  id="qty"
+                  name="quantity"
+                  type="number"
+                  min="1"
+                  max="10"
+                  value="1"
+                  class="h-10 w-14 border-none bg-transparent text-center text-[15px] font-medium text-ink focus:outline-none focus:ring-0"
+                />
+                <button
+                  type="button"
+                  id="qty-inc"
+                  aria-label="Aumentar cantidad"
+                  class="cta-push h-10 w-10 text-lg text-ink-soft hover:bg-bone hover:text-forest-700"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              id="buy-now"
+              class="group cta-push inline-flex w-full items-center justify-center gap-3 rounded-full bg-forest-700 px-8 py-4 text-[15px] font-medium tracking-wide text-bone hover:bg-forest-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest-700 disabled:cursor-not-allowed disabled:opacity-70"
+            >
+              <span id="buy-label">Comprar ahora</span>
+              <span
+                aria-hidden="true"
+                id="buy-arrow"
+                class="inline-flex h-7 w-7 items-center justify-center rounded-full bg-bone/20 text-[12px] leading-none transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-x-0.5"
+              >
+                ↗
+              </span>
+            </button>
+
+            <p
+              id="checkout-feedback"
+              role="status"
+              aria-live="polite"
+              class="min-h-[1.25rem] text-[13px] text-ink-soft"
+            >
+              Pago procesado por Mercado Pago en entorno de prueba.
+            </p>
+          </div>
         </form>
 
         <ul class="mt-8 grid grid-cols-1 gap-3 text-[13px] text-ink-soft sm:grid-cols-2">
@@ -135,43 +362,291 @@ import product from '../data/product.json';
   </div>
 </section>
 
+<style>
+  .variant-card {
+    transition:
+      background-color 350ms cubic-bezier(0.16, 1, 0.3, 1),
+      color 350ms cubic-bezier(0.16, 1, 0.3, 1),
+      border-color 350ms cubic-bezier(0.16, 1, 0.3, 1),
+      transform 350ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .variant-card.is-selected {
+    background-color: var(--color-forest-700);
+    border-color: var(--color-forest-700);
+    color: var(--color-bone);
+  }
+  .variant-card.is-selected :where(span) {
+    color: inherit;
+  }
+  .variant-card.is-selected :where(.text-copper) {
+    color: var(--color-copper-soft);
+  }
+  .variant-card.is-selected :where(.text-ink-mute) {
+    color: color-mix(in oklab, var(--color-bone) 75%, transparent);
+  }
+  .variant-card:active {
+    transform: translateY(1px) scale(0.99);
+  }
+</style>
+
 <script>
-  // Vanilla JS checkout handler, no React/Preact needed.
-  const form = document.getElementById('checkout-form') as HTMLFormElement | null;
-  const qtyInput = document.getElementById('qty') as HTMLInputElement | null;
-  const dec = document.getElementById('qty-dec');
-  const inc = document.getElementById('qty-inc');
+  import {
+    getState,
+    subscribe,
+    setState,
+    findModel,
+    findEngraving,
+    outOfStockReason,
+    unitPrice,
+    configLine,
+    formatARS,
+    formatInstallments,
+  } from '../scripts/variant-store';
+  import {
+    getShippingState,
+    subscribeShipping,
+    shippingCost,
+    isValidCP,
+  } from '../scripts/shipping-store';
+
+  // --- Elementos del DOM ---
+  const form = document.getElementById('variant-form') as HTMLFormElement | null;
+  const dynamicPrice = document.getElementById('dynamic-price');
+  const dynamicConfig = document.getElementById('dynamic-config');
+  const dynamicInstallments = document.getElementById('dynamic-installments');
+  const engravingTextWrap = document.getElementById('engraving-text-wrap');
+  const engravingText = document.getElementById('engraving-text') as HTMLTextAreaElement | null;
+  const engravingCounter = document.getElementById('engraving-counter');
+  const woodFieldset = document.getElementById('wood-fieldset');
+  const ringFieldset = document.getElementById('ring-fieldset');
+  const variantFeedback = document.getElementById('variant-feedback');
+  const variantFeedbackReason = document.getElementById('variant-feedback-reason');
+  const summaryProduct = document.getElementById('summary-product');
+  const summaryShipping = document.getElementById('summary-shipping');
+  const summaryTotal = document.getElementById('summary-total');
   const buyBtn = document.getElementById('buy-now') as HTMLButtonElement | null;
   const buyLabel = document.getElementById('buy-label');
-  const feedback = document.getElementById('checkout-feedback');
+  const checkoutFeedback = document.getElementById('checkout-feedback');
+  const qtyInput = document.getElementById('qty') as HTMLInputElement | null;
+  const qtyDec = document.getElementById('qty-dec');
+  const qtyInc = document.getElementById('qty-inc');
 
-  if (dec && qtyInput) {
-    dec.addEventListener('click', () => {
+  // --- Helpers ---
+  function selectedValue(dim: 'model' | 'wood' | 'ring' | 'engraving'): string | null {
+    const input = document.querySelector<HTMLInputElement>(
+      `input[name="${dim}"]:checked`,
+    );
+    return input?.value ?? null;
+  }
+
+  function syncRadios(dim: 'model' | 'wood' | 'ring' | 'engraving', value: string): void {
+    const input = document.querySelector<HTMLInputElement>(
+      `input[name="${dim}"][value="${value}"]`,
+    );
+    if (input) input.checked = true;
+  }
+
+  function syncCards(state: ReturnType<typeof getState>): void {
+    const cards = document.querySelectorAll<HTMLElement>('[data-variant-card]');
+    cards.forEach((card) => {
+      const dim = card.dataset.dim as 'model' | 'wood' | 'ring' | 'engraving' | undefined;
+      const value = card.dataset.value;
+      if (!dim || !value) return;
+      let isSelected = false;
+      if (dim === 'model') isSelected = state.modelId === value;
+      else if (dim === 'wood') isSelected = state.woodId === value;
+      else if (dim === 'ring') isSelected = state.ringId === value;
+      else isSelected = state.engravingId === value;
+      card.classList.toggle('is-selected', isSelected);
+    });
+  }
+
+  function applyVisibility(state: ReturnType<typeof getState>): void {
+    const model = findModel(state.modelId);
+    if (woodFieldset) woodFieldset.classList.toggle('hidden', model?.hidesWood ?? false);
+    if (ringFieldset) ringFieldset.classList.toggle('hidden', model?.hidesRing ?? false);
+
+    const engraving = findEngraving(state.engravingId);
+    const needsText = engraving?.needsText ?? false;
+    if (engravingTextWrap) engravingTextWrap.classList.toggle('hidden', !needsText);
+    if (needsText && engravingText) {
+      engravingText.maxLength = engraving?.maxChars ?? 24;
+      engravingText.placeholder = engraving?.placeholder ?? '';
+    }
+  }
+
+  function applyOutOfStock(state: ReturnType<typeof getState>): void {
+    const reason = outOfStockReason(state);
+    if (variantFeedback && variantFeedbackReason) {
+      variantFeedback.classList.toggle('hidden', reason === null);
+      variantFeedbackReason.textContent = reason ?? '';
+    }
+    if (buyBtn) buyBtn.disabled = reason !== null;
+  }
+
+  function applyEngravingCounter(state: ReturnType<typeof getState>): void {
+    const engraving = findEngraving(state.engravingId);
+    if (!engravingCounter || !engraving) return;
+    const max = engraving.maxChars ?? 0;
+    const current = state.engravingText.length;
+    engravingCounter.textContent = `${current}/${max}`;
+  }
+
+  function readQty(): number {
+    if (!qtyInput) return 1;
+    return Math.max(1, Math.min(10, parseInt(qtyInput.value, 10) || 1));
+  }
+
+  function applyPrice(state: ReturnType<typeof getState>): void {
+    const unit = unitPrice(state);
+    const qty = readQty();
+    const config = configLine(state);
+    if (dynamicPrice) dynamicPrice.textContent = formatARS(unit);
+    if (dynamicConfig) dynamicConfig.textContent = config;
+    if (dynamicInstallments) dynamicInstallments.textContent = formatInstallments(unit);
+    if (summaryProduct) summaryProduct.textContent = formatARS(unit * qty);
+
+    const shipping = getShippingState();
+    const shipCost = shippingCost(shipping);
+    const total = unit * qty + (shipCost ?? 0);
+    if (summaryShipping) {
+      summaryShipping.textContent =
+        shipCost !== null
+          ? formatARS(shipCost)
+          : isValidCP(shipping.cp)
+            ? 'a cotizar'
+            : 'ingresá tu CP';
+      summaryShipping.classList.toggle('text-ink-mute', shipCost === null);
+    }
+    if (summaryTotal) summaryTotal.textContent = formatARS(total);
+  }
+
+  // Re-render cuando cambia cualquier estado
+  function render(): void {
+    const state = getState();
+    syncCards(state);
+    applyVisibility(state);
+    applyOutOfStock(state);
+    applyEngravingCounter(state);
+    applyPrice(state);
+  }
+
+  subscribe(render);
+  subscribeShipping(render);
+
+  // --- Bindings ---
+  function onVariantChange(dim: 'model' | 'wood' | 'ring' | 'engraving') {
+    const value = selectedValue(dim);
+    if (!value) return;
+    const patch: Partial<ReturnType<typeof getState>> = {};
+    if (dim === 'model') patch.modelId = value;
+    else if (dim === 'wood') patch.woodId = value;
+    else if (dim === 'ring') patch.ringId = value;
+    else patch.engravingId = value;
+    setState(patch);
+  }
+
+  ['model', 'wood', 'ring', 'engraving'].forEach((dim) => {
+    const cards = document.querySelectorAll<HTMLElement>(
+      `[data-variant-card][data-dim="${dim}"]`,
+    );
+    cards.forEach((card) => {
+      const input = card.querySelector<HTMLInputElement>('input[type="radio"]');
+      input?.addEventListener('change', () => {
+        onVariantChange(dim as 'model' | 'wood' | 'ring' | 'engraving');
+      });
+      card.addEventListener('click', () => {
+        if (input && !input.checked) {
+          input.checked = true;
+          onVariantChange(dim as 'model' | 'wood' | 'ring' | 'engraving');
+        }
+      });
+    });
+  });
+
+  if (engravingText) {
+    engravingText.addEventListener('input', () => {
+      const engraving = findEngraving(getState().engravingId);
+      const max = engraving?.maxChars ?? 24;
+      let value = engravingText.value.slice(0, max);
+      if (value !== engravingText.value) engravingText.value = value;
+      setState({ engravingText: value });
+    });
+  }
+
+  // Cantidad
+  if (qtyDec && qtyInput) {
+    qtyDec.addEventListener('click', () => {
       const next = Math.max(1, (parseInt(qtyInput.value, 10) || 1) - 1);
       qtyInput.value = String(next);
+      render();
     });
   }
-  if (inc && qtyInput) {
-    inc.addEventListener('click', () => {
+  if (qtyInc && qtyInput) {
+    qtyInc.addEventListener('click', () => {
       const next = Math.min(10, (parseInt(qtyInput.value, 10) || 1) + 1);
       qtyInput.value = String(next);
+      render();
     });
   }
+  if (qtyInput) {
+    qtyInput.addEventListener('change', render);
+  }
 
-  if (form && buyBtn && buyLabel && feedback) {
+  // Hidratar radios y textarea desde el store (solo una vez)
+  const initial = getState();
+  syncRadios('model', initial.modelId);
+  syncRadios('wood', initial.woodId);
+  syncRadios('ring', initial.ringId);
+  syncRadios('engraving', initial.engravingId);
+  if (engravingText && initial.engravingText) {
+    engravingText.value = initial.engravingText;
+  }
+  render();
+
+  // --- Submit: enviar variante + envío al endpoint ---
+  if (form && buyBtn && buyLabel && checkoutFeedback) {
     form.addEventListener('submit', async (event) => {
       event.preventDefault();
-      const quantity = Math.max(1, Math.min(10, parseInt(qtyInput?.value ?? '1', 10) || 1));
+
+      const reason = outOfStockReason(getState());
+      if (reason !== null) {
+        checkoutFeedback.textContent = 'Esta combinación está agotada. Probá otra madera.';
+        return;
+      }
+
+      const quantity = Math.max(
+        1,
+        Math.min(10, parseInt(qtyInput?.value ?? '1', 10) || 1),
+      );
 
       buyBtn.disabled = true;
       buyLabel.textContent = 'Conectando con el proveedor…';
-      feedback.textContent = 'Estamos creando tu preferencia de pago.';
+      checkoutFeedback.textContent = 'Estamos creando tu preferencia de pago.';
+
+      const v = getState();
+      const shipping = getShippingState();
+      const shipCost = shippingCost(shipping);
 
       try {
         const res = await fetch('/api/checkout', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ quantity }),
+          body: JSON.stringify({
+            quantity,
+            variant: {
+              modelId: v.modelId,
+              woodId: v.woodId,
+              ringId: v.ringId,
+              engravingId: v.engravingId,
+              engravingText: v.engravingText,
+            },
+            shipping: {
+              cp: shipping.cp,
+              tipo: shipping.tipo,
+              cost: shipCost,
+            },
+          }),
         });
 
         const data = (await res.json().catch(() => ({}))) as {
@@ -183,13 +658,13 @@ import product from '../data/product.json';
           throw new Error(data.error ?? `Error ${res.status}`);
         }
 
-        feedback.textContent = 'Redirigiendo al checkout seguro…';
+        checkoutFeedback.textContent = 'Redirigiendo al checkout seguro…';
         window.location.href = data.checkoutUrl;
       } catch (err) {
         const msg = err instanceof Error ? err.message : 'Algo salió mal';
-        feedback.textContent = `No pudimos iniciar el pago: ${msg}. Probá de nuevo en un momento.`;
+        checkoutFeedback.textContent = `No pudimos iniciar el pago: ${msg}. Probá de nuevo en un momento.`;
         buyLabel.textContent = 'Comprar ahora';
-        buyBtn.disabled = false;
+        buyBtn.disabled = outOfStockReason(getState()) !== null;
       }
     });
   }

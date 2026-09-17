@@ -1,0 +1,126 @@
+{
+  "models": [
+    {
+      "id": "criollo-clasico",
+      "label": "Criollo clásico",
+      "description": "Forma tradicional, paredes finas. La silueta que ves en las fotos del taller.",
+      "basePrice": 38500,
+      "priceModifier": 0,
+      "modifierLabel": "incluido"
+    },
+    {
+      "id": "torpedo",
+      "label": "Torpedo",
+      "description": "Base ancha y boca angosta. Ergonómico para la mano grande.",
+      "basePrice": 41000,
+      "priceModifier": 2500,
+      "modifierLabel": "+ $ 2.500"
+    },
+    {
+      "id": "camionero",
+      "label": "Camionero",
+      "description": "Robusto, paredes gruesas. Pensado para viaje y uso intensivo.",
+      "basePrice": 40300,
+      "priceModifier": 1800,
+      "modifierLabel": "+ $ 1.800"
+    },
+    {
+      "id": "bombilla-suelta",
+      "label": "Bombilla suelta",
+      "description": "Solo la bombilla de alpaca, sin mate. Boquilla de bronce.",
+      "basePrice": 14500,
+      "priceModifier": -24000,
+      "modifierLabel": "− $ 24.000",
+      "hidesWood": true,
+      "hidesRing": true
+    }
+  ],
+  "woods": [
+    {
+      "id": "calden",
+      "label": "Caldén",
+      "description": "Dureza extrema. Veta rojiza, tacto cálido.",
+      "priceModifier": 0,
+      "modifierLabel": "incluido"
+    },
+    {
+      "id": "algarrobo",
+      "label": "Algarrobo",
+      "description": "Madera clásica de Córdoba. Tono miel, veta suave.",
+      "priceModifier": 0,
+      "modifierLabel": "incluido"
+    },
+    {
+      "id": "mora",
+      "label": "Mora",
+      "description": "Veta oscura y contrastante. Estable frente a la humedad.",
+      "priceModifier": 5500,
+      "modifierLabel": "+ $ 5.500"
+    },
+    {
+      "id": "guayacan",
+      "label": "Guayacán",
+      "description": "La más dura del monte. Tono verdoso que oscurece con el uso.",
+      "priceModifier": 7800,
+      "modifierLabel": "+ $ 7.800"
+    }
+  ],
+  "rings": [
+    {
+      "id": "alpaca",
+      "label": "Alpaca",
+      "description": "Aleación tradicional. Acabado mate, sin níquel.",
+      "priceModifier": 0,
+      "modifierLabel": "incluido"
+    },
+    {
+      "id": "plata-925",
+      "label": "Plata 925",
+      "description": "Plata legítima, sellada. Pátina natural con el uso.",
+      "priceModifier": 18000,
+      "modifierLabel": "+ $ 18.000"
+    },
+    {
+      "id": "sin-virola",
+      "label": "Sin virola",
+      "description": "Madera al natural, sin anillo metálico.",
+      "priceModifier": -5500,
+      "modifierLabel": "− $ 5.500"
+    }
+  ],
+  "engravings": [
+    {
+      "id": "ninguno",
+      "label": "Sin grabado",
+      "description": "Madera al natural.",
+      "priceModifier": 0,
+      "modifierLabel": "incluido",
+      "needsText": false
+    },
+    {
+      "id": "iniciales",
+      "label": "Iniciales",
+      "description": "Hasta 3 letras. Tipografía Cormorant, color cobre.",
+      "priceModifier": 4500,
+      "modifierLabel": "+ $ 4.500",
+      "needsText": true,
+      "maxChars": 3,
+      "placeholder": "Ej: MRA"
+    },
+    {
+      "id": "frase",
+      "label": "Frase corta",
+      "description": "Hasta 24 caracteres. Una línea, tipografía Cormorant italic.",
+      "priceModifier": 6500,
+      "modifierLabel": "+ $ 6.500",
+      "needsText": true,
+      "maxChars": 24,
+      "placeholder": "Ej: para mi mejor amigo"
+    }
+  ],
+  "outOfStock": [
+    { "model": "camionero", "wood": "guayacan", "reason": "Última partida agotada. Volvemos a producir en 3 semanas." },
+    { "model": "bombilla-suelta", "wood": "calden", "ring": "sin-virola", "reason": "La bombilla no usa madera ni virola. Probá otras opciones." },
+    { "model": "criollo-clasico", "wood": "mora", "ring": "sin-virola", "reason": "El contraste de veta oscura con virola de alpaca es nuestra recomendación." }
+  ]
+}
