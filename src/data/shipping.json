@@ -1,0 +1,35 @@
+{
+  "shipping": {
+    "title": "Envío",
+    "intro": "Cada mate sale del taller envuelto en papel sin ácido y protegido dentro de una caja de cartón doble pared. El embalaje está pensado para que la pieza llegue en perfectas condiciones sin plástico de un solo uso.",
+    "options": [
+      {
+        "label": "CABA y GBA",
+        "value": "2 a 3 días hábiles",
+        "detail": "Motomensajería propia. Entrega en mano."
+      },
+      {
+        "label": "Interior de Buenos Aires y centro del país",
+        "value": "3 a 5 días hábiles",
+        "detail": "Correo Argentino con seguimiento."
+      },
+      {
+        "label": "Patagonia y NOA",
+        "value": "5 a 7 días hábiles",
+        "detail": "Transportista privado. Sin costo adicional."
+      }
+    ],
+    "cost": "Envío gratis a todo el país en compras superiores a $ 45.000. Para montos menores, el costo se calcula al finalizar la compra según el destino."
+  },
+  "returns": {
+    "title": "Devoluciones y cambios",
+    "intro": "Si el mate llega con algún defecto de fabricación, lo cambiamos sin costo. También aceptamos devoluciones dentro de los treinta días si la pieza no fue usada.",
+    "policy": [
+      "Tenés 30 días corridos desde que recibís el producto para iniciar el proceso.",
+      "La pieza debe estar sin uso, sin manchas de yerba y con su envase original.",
+      "Te enviamos una etiqueta de devolución por correo sin costo para cambios por defectos.",
+      "Para devoluciones por decisión del cliente, el costo de envío corre por cuenta del comprador.",
+      "El reembolso se acredita dentro de los 10 días hábiles de recibida la pieza en el taller."
+    ]
+  }
+}

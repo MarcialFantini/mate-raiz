@@ -1,0 +1,57 @@
+---
+import shipping from '../data/shipping.json';
+---
+
+<section id="envio" class="relative w-full py-24 md:py-32 lg:py-40">
+  <div class="mx-auto max-w-[1400px] px-5 md:px-10">
+    <div class="max-w-[65ch]" data-reveal>
+      <h2 class="font-display text-[40px] font-light leading-[1.05] tracking-[-0.01em] md:text-[56px] md:leading-[1.02]">
+        {shipping.shipping.title}
+        <span class="block italic text-forest-700">y devoluciones.</span>
+      </h2>
+      <p class="mt-5 text-[16px] leading-relaxed text-ink-soft">
+        {shipping.shipping.intro}
+      </p>
+    </div>
+
+    <ul class="mt-12 grid grid-cols-1 gap-3 md:mt-16 md:grid-cols-3" data-reveal>
+      {
+        shipping.shipping.options.map((opt) => (
+          <li class="rounded-2xl border border-bone-200 bg-bone-50 p-5">
+            <div class="flex items-baseline justify-between gap-3">
+              <p class="text-[13px] font-medium uppercase tracking-[0.18em] text-ink-soft">{opt.label}</p>
+              <p class="font-display text-[16px] text-forest-700">{opt.value}</p>
+            </div>
+            <p class="mt-2 text-[13px] leading-relaxed text-ink-soft">{opt.detail}</p>
+          </li>
+        ))
+      }
+    </ul>
+
+    <p class="mt-8 text-[14px] leading-relaxed text-ink-soft" data-reveal>
+      {shipping.shipping.cost}
+    </p>
+
+    <!-- Returns block: different layout to avoid zigzag -->
+    <div class="mt-24 grid grid-cols-1 gap-10 border-t border-bone-200 pt-16 md:mt-32 md:grid-cols-12 md:gap-10" data-reveal>
+      <div class="md:col-span-4">
+        <h3 class="font-display text-[28px] font-light leading-[1.1] md:text-[36px]">
+          {shipping.returns.title}
+        </h3>
+      </div>
+      <div class="md:col-span-8">
+        <p class="max-w-[60ch] text-[16px] leading-relaxed text-ink-soft">{shipping.returns.intro}</p>
+        <ol class="mt-8 grid grid-cols-1 gap-3 md:grid-cols-2">
+          {
+            shipping.returns.policy.map((line, idx) => (
+              <li class="flex gap-4 rounded-2xl bg-bone-100/60 p-5 ring-1 ring-bone-200">
+                <span class="font-display text-[18px] font-light text-forest-700">{String(idx + 1).padStart(2, '0')}</span>
+                <span class="text-[14px] leading-relaxed text-ink">{line}</span>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,44 @@
+---
+const links = [
+  { href: '#historia', label: 'El oficio' },
+  { href: '#detalles', label: 'Detalles' },
+  { href: '#galeria', label: 'Galería' },
+  { href: '#preguntas', label: 'Preguntas' },
+];
+---
+
+<header class="sticky top-0 z-40 w-full">
+  <div class="mx-auto flex max-w-[1400px] items-center justify-between gap-6 px-5 pt-5 pb-3 md:px-10 md:pt-6">
+    <a
+      href="#main"
+      class="font-display text-2xl tracking-tight text-forest-900 md:text-[28px] md:leading-none"
+      aria-label="Mate Raíz, ir al inicio"
+    >
+      Mate<span class="italic font-light">Raíz</span>
+    </a>
+
+    <nav
+      aria-label="Navegación principal"
+      class="hidden items-center gap-7 rounded-full border border-bone-200 bg-bone-50/70 px-6 py-2.5 backdrop-blur-md md:flex"
+    >
+      {
+        links.map((l) => (
+          <a
+            href={l.href}
+            class="text-[13px] font-medium tracking-wide text-ink-soft transition-colors duration-300 hover:text-forest-700"
+          >
+            {l.label}
+          </a>
+        ))
+      }
+    </nav>
+
+    <a
+      href="#comprar"
+      class="cta-push inline-flex items-center gap-2 rounded-full bg-forest-900 px-5 py-2.5 text-[13px] font-medium tracking-wide text-bone-50 hover:bg-forest-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest-900"
+    >
+      Comprar
+      <span aria-hidden="true" class="inline-flex h-5 w-5 items-center justify-center rounded-full bg-bone-50/15 text-[11px] leading-none">↗</span>
+    </a>
+  </div>
+</header>

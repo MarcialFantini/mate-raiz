@@ -1,0 +1,34 @@
+# Build outputs
+dist/
+.astro/
+
+# Dependencies
+node_modules/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+
+# Vite cache
+.vite/
+
+# pnpm store (defensivo)
+.pnpm-store/
+
+# Project-specific: lead capture data (PII simulada, no debe commitearse)
+data/leads.json

@@ -1,0 +1,159 @@
+/* Self-hosted variable fonts */
+@import '@fontsource-variable/cormorant-garamond/index.css';
+@import '@fontsource-variable/plus-jakarta-sans/index.css';
+
+/* Tailwind v4 */
+@import 'tailwindcss';
+
+/* Design tokens: Forest palette (anti beige+brass default) */
+@theme {
+  /* Bone / off-white surfaces, cool, not warm cream */
+  --color-bone-50: #f5f4ef;
+  --color-bone-100: #ecebe4;
+  --color-bone-200: #dcdacf;
+  --color-bone-300: #b9b6a8;
+
+  /* Deep forest (yerba, monte, artesanado) */
+  --color-forest-50: #e6ede7;
+  --color-forest-100: #c2d1c4;
+  --color-forest-300: #6f8d75;
+  --color-forest-500: #2f5a3d;
+  --color-forest-700: #1f3f2b;
+  --color-forest-900: #11241a;
+  --color-forest-950: #08160f;
+
+  /* Honey amber accent (not brass, not oxblood) */
+  --color-amber-warm: #b8732a;
+  --color-amber-soft: #d4a264;
+
+  /* Ink */
+  --color-ink: #1a201c;
+  --color-ink-soft: #3d4640;
+
+  /* Type families */
+  --font-display: 'Cormorant Garamond Variable', 'Cormorant Garamond', ui-serif, Georgia, serif;
+  --font-sans: 'Plus Jakarta Sans Variable', 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
+}
+
+/* Base */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-bone-50);
+  color: var(--color-ink);
+  font-feature-settings: 'ss01', 'ss02';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Display type */
+.font-display {
+  font-family: var(--font-display);
+  font-feature-settings: 'liga', 'dlig';
+}
+
+/* Selection */
+::selection {
+  background-color: var(--color-forest-700);
+  color: var(--color-bone-50);
+}
+
+/* Reveal-on-scroll utility, gentle, transform/opacity only */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 900ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 900ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-reveal].is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Custom button feedback, physical push, no opacity flash */
+.cta-push {
+  transition: transform 350ms cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 350ms cubic-bezier(0.16, 1, 0.3, 1),
+    color 350ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 350ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cta-push:active {
+  transform: translateY(1px) scale(0.99);
+}
+
+/* Hairline rule */
+.hairline {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--color-bone-300) 15%,
+    var(--color-bone-300) 85%,
+    transparent 100%
+  );
+}
+
+.hairline-dark {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    color-mix(in oklab, var(--color-forest-100) 60%, transparent) 15%,
+    color-mix(in oklab, var(--color-bone-300) 60%, transparent) 85%,
+    transparent 100%
+  );
+}
+
+/* Image treatment, editorial muted */
+.editorial-img {
+  filter: contrast(1.05) saturate(0.85);
+}
+
+/* Subtle film grain overlay (fixed, pointer-events none) */
+.grain {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 60;
+  opacity: 0.04;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+}
+
+/* Accordion details marker reset */
+details > summary {
+  list-style: none;
+  cursor: pointer;
+}
+details > summary::-webkit-details-marker {
+  display: none;
+}
+details[open] .faq-icon {
+  transform: rotate(45deg);
+}
+.faq-icon {
+  transition: transform 350ms cubic-bezier(0.16, 1, 0.3, 1);
+}

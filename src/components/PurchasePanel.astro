@@ -1,0 +1,192 @@
+---
+import product from '../data/product.json';
+---
+
+<section id="comprar" class="relative w-full py-24 md:py-32 lg:py-40">
+  <div class="mx-auto max-w-[1400px] px-5 md:px-10">
+    <div class="grid grid-cols-1 gap-12 md:grid-cols-12 md:gap-10" data-reveal>
+      <!-- Left: editorial portrait image, kept consistent with hero -->
+      <div class="md:col-span-6">
+        <div class="overflow-hidden rounded-[28px] bg-bone-100 ring-1 ring-bone-200 shadow-[0_30px_80px_-30px_rgba(17,36,26,0.25)]">
+          <img
+            src="https://picsum.photos/seed/mate-raiz-packaging-caja/1200/1400"
+            alt="Mate imperial en su caja de cartón doble pared, listo para envío"
+            width="1200"
+            height="1400"
+            loading="lazy"
+            decoding="async"
+            class="editorial-img aspect-[6/7] h-full w-full object-cover"
+          />
+        </div>
+      </div>
+
+      <!-- Right: price + buy -->
+      <div class="flex flex-col justify-center md:col-span-6 md:pl-6">
+        <h2 class="font-display text-[36px] font-light leading-[1.05] md:text-[52px] md:leading-[1.02]">
+          {product.name}
+          <span class="block italic">{product.subtitle}</span>
+        </h2>
+        <p class="mt-5 max-w-[44ch] text-[16px] leading-relaxed text-ink-soft">
+          {product.description}
+        </p>
+
+        <!-- Price block -->
+        <div class="mt-10 border-t border-bone-200 pt-8">
+          <div class="flex items-baseline gap-4">
+            <span class="font-display text-[56px] font-light leading-none tracking-[-0.02em] text-ink md:text-[72px]">
+              {product.price.formatted}
+            </span>
+            <span class="text-[13px] uppercase tracking-[0.18em] text-ink-soft">ARS</span>
+          </div>
+          <p class="mt-3 text-[14px] text-ink-soft">{product.price.installments}</p>
+        </div>
+
+        <!-- Quantity + Buy -->
+        <form
+          id="checkout-form"
+          class="mt-8 flex flex-col gap-4"
+          aria-describedby="checkout-feedback"
+        >
+          <div class="flex flex-wrap items-center gap-3">
+            <label
+              for="qty"
+              class="text-[12px] font-medium uppercase tracking-[0.18em] text-ink-soft"
+            >
+              Cantidad
+            </label>
+            <div class="inline-flex items-center overflow-hidden rounded-full border border-bone-300 bg-bone-50">
+              <button
+                type="button"
+                id="qty-dec"
+                aria-label="Disminuir cantidad"
+                class="cta-push h-10 w-10 text-lg text-ink-soft hover:bg-bone-100 hover:text-forest-900"
+              >
+                −
+              </button>
+              <input
+                id="qty"
+                name="quantity"
+                type="number"
+                min="1"
+                max="10"
+                value="1"
+                class="h-10 w-14 border-none bg-transparent text-center text-[15px] font-medium text-ink focus:outline-none focus:ring-0"
+              />
+              <button
+                type="button"
+                id="qty-inc"
+                aria-label="Aumentar cantidad"
+                class="cta-push h-10 w-10 text-lg text-ink-soft hover:bg-bone-100 hover:text-forest-900"
+              >
+                +
+              </button>
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            id="buy-now"
+            class="group cta-push inline-flex w-full items-center justify-center gap-3 rounded-full bg-forest-900 px-8 py-4 text-[15px] font-medium tracking-wide text-bone-50 hover:bg-forest-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest-900 disabled:cursor-not-allowed disabled:opacity-70"
+          >
+            <span id="buy-label">Comprar ahora</span>
+            <span
+              aria-hidden="true"
+              id="buy-arrow"
+              class="inline-flex h-7 w-7 items-center justify-center rounded-full bg-bone-50/15 text-[12px] leading-none transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-x-0.5"
+            >
+              ↗
+            </span>
+          </button>
+
+          <p
+            id="checkout-feedback"
+            role="status"
+            aria-live="polite"
+            class="min-h-[1.25rem] text-[13px] text-ink-soft"
+          >
+            Pago procesado por Mercado Pago en entorno de prueba.
+          </p>
+        </form>
+
+        <ul class="mt-8 grid grid-cols-1 gap-3 text-[13px] text-ink-soft sm:grid-cols-2">
+          <li class="flex items-start gap-3">
+            <span aria-hidden="true" class="mt-1 inline-block h-3 w-px bg-forest-700"></span>
+            Envío gratis en compras +$ 45.000
+          </li>
+          <li class="flex items-start gap-3">
+            <span aria-hidden="true" class="mt-1 inline-block h-3 w-px bg-forest-700"></span>
+            30 días para cambios y devoluciones
+          </li>
+          <li class="flex items-start gap-3">
+            <span aria-hidden="true" class="mt-1 inline-block h-3 w-px bg-forest-700"></span>
+            Listo para usar, curado en fábrica
+          </li>
+          <li class="flex items-start gap-3">
+            <span aria-hidden="true" class="mt-1 inline-block h-3 w-px bg-forest-700"></span>
+            Embalado sin plástico de un solo uso
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Vanilla JS checkout handler, no React/Preact needed.
+  const form = document.getElementById('checkout-form') as HTMLFormElement | null;
+  const qtyInput = document.getElementById('qty') as HTMLInputElement | null;
+  const dec = document.getElementById('qty-dec');
+  const inc = document.getElementById('qty-inc');
+  const buyBtn = document.getElementById('buy-now') as HTMLButtonElement | null;
+  const buyLabel = document.getElementById('buy-label');
+  const feedback = document.getElementById('checkout-feedback');
+
+  if (dec && qtyInput) {
+    dec.addEventListener('click', () => {
+      const next = Math.max(1, (parseInt(qtyInput.value, 10) || 1) - 1);
+      qtyInput.value = String(next);
+    });
+  }
+  if (inc && qtyInput) {
+    inc.addEventListener('click', () => {
+      const next = Math.min(10, (parseInt(qtyInput.value, 10) || 1) + 1);
+      qtyInput.value = String(next);
+    });
+  }
+
+  if (form && buyBtn && buyLabel && feedback) {
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const quantity = Math.max(1, Math.min(10, parseInt(qtyInput?.value ?? '1', 10) || 1));
+
+      buyBtn.disabled = true;
+      buyLabel.textContent = 'Conectando con el proveedor…';
+      feedback.textContent = 'Estamos creando tu preferencia de pago.';
+
+      try {
+        const res = await fetch('/api/checkout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ quantity }),
+        });
+
+        const data = (await res.json().catch(() => ({}))) as {
+          checkoutUrl?: string;
+          error?: string;
+        };
+
+        if (!res.ok || !data.checkoutUrl) {
+          throw new Error(data.error ?? `Error ${res.status}`);
+        }
+
+        feedback.textContent = 'Redirigiendo al checkout seguro…';
+        window.location.href = data.checkoutUrl;
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : 'Algo salió mal';
+        feedback.textContent = `No pudimos iniciar el pago: ${msg}. Probá de nuevo en un momento.`;
+        buyLabel.textContent = 'Comprar ahora';
+        buyBtn.disabled = false;
+      }
+    });
+  }
+</script>

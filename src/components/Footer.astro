@@ -1,0 +1,48 @@
+---
+const year = new Date().getFullYear();
+---
+
+<footer class="border-t border-bone-200 bg-bone-50 pt-16 pb-10">
+  <div class="mx-auto max-w-[1400px] px-5 md:px-10">
+    <div class="grid grid-cols-1 gap-10 md:grid-cols-12 md:gap-8">
+      <div class="md:col-span-5">
+        <p class="font-display text-3xl tracking-tight text-forest-900 md:text-[34px]">
+          Mate<span class="italic font-light">Raíz</span>
+        </p>
+        <p class="mt-4 max-w-[40ch] text-[14px] leading-relaxed text-ink-soft">
+          Mate imperial con virola de alpaca, hecho a torno en las Sierras de Córdoba.
+        </p>
+      </div>
+
+      <div class="md:col-span-3">
+        <p class="text-[11px] font-medium uppercase tracking-[0.22em] text-ink-soft">Navegación</p>
+        <ul class="mt-4 space-y-2 text-[14px]">
+          <li><a href="#historia" class="text-ink transition-colors duration-300 hover:text-forest-700">El oficio</a></li>
+          <li><a href="#detalles" class="text-ink transition-colors duration-300 hover:text-forest-700">Detalles</a></li>
+          <li><a href="#galeria" class="text-ink transition-colors duration-300 hover:text-forest-700">Galería</a></li>
+          <li><a href="#comprar" class="text-ink transition-colors duration-300 hover:text-forest-700">Comprar</a></li>
+        </ul>
+      </div>
+
+      <div class="md:col-span-4">
+        <p class="text-[11px] font-medium uppercase tracking-[0.22em] text-ink-soft">Contacto</p>
+        <ul class="mt-4 space-y-2 text-[14px]">
+          <li>
+            <a href="mailto:hola@mate-raiz.example" class="text-ink transition-colors duration-300 hover:text-forest-700">
+              hola@mate-raiz.example
+            </a>
+          </li>
+          <li>
+            <a href="#preguntas" class="text-ink transition-colors duration-300 hover:text-forest-700">Preguntas frecuentes</a>
+          </li>
+          <li class="text-ink-soft">Sierras de Córdoba, Argentina</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="mt-12 flex flex-wrap items-center justify-between gap-4 border-t border-bone-200 pt-6 text-[12px] uppercase tracking-[0.18em] text-ink-soft">
+      <p>© {year} Mate Raíz · Taller artesanal</p>
+      <p>Hecho en Argentina</p>
+    </div>
+  </div>
+</footer>
