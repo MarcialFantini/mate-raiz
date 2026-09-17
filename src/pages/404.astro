@@ -1,0 +1,47 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="No encontrado · Mate Raíz"
+  description="La página que buscás no existe. Volvé al inicio o escribinos para ayudarte."
+>
+  <section class="relative flex min-h-[60vh] items-center py-24 md:py-32">
+    <div class="mx-auto max-w-[1400px] px-5 md:px-10">
+      <div class="mx-auto max-w-[60ch] text-center" data-reveal>
+        <p class="mb-5 inline-flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.22em] text-copper">
+          <span aria-hidden="true" class="block h-px w-8 bg-copper"></span>
+          404 · No encontrado
+        </p>
+        <h1 class="font-display text-[44px] font-light leading-[1.05] tracking-[-0.01em] md:text-[72px] md:leading-[1.02]">
+          Esta página
+          <span class="italic text-copper">no existe.</span>
+        </h1>
+        <p class="dropcap mt-6 text-[16px] leading-[1.7] text-ink-soft">
+          Si estabas buscando un pedido, verificá el número. Si es un enlace roto, escribinos
+          y lo arreglamos enseguida.
+        </p>
+
+        <div class="mt-10 flex flex-wrap items-center justify-center gap-3">
+          <a
+            href="/"
+            class="cta-push inline-flex items-center gap-3 rounded-full bg-forest-700 px-7 py-3.5 text-[14px] font-medium tracking-wide text-bone hover:bg-forest-900"
+          >
+            Volver al inicio
+            <span aria-hidden="true" class="inline-flex h-7 w-7 items-center justify-center rounded-full bg-bone/20 text-[12px] leading-none">↗</span>
+          </a>
+          <a
+            href="/contacto"
+            class="cta-push inline-flex items-center gap-3 rounded-full border border-bone-200 bg-bone-100/60 px-7 py-3.5 text-[14px] font-medium tracking-wide text-ink hover:bg-bone hover:text-forest-700"
+          >
+            Escribinos
+          </a>
+        </div>
+
+        <p class="mt-10 text-[12px] uppercase tracking-[0.18em] text-ink-mute">
+          ¿Pediste un mate recientemente? Probá con MR-1042, MR-1041 o MR-1037.
+        </p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

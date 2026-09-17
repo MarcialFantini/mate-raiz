@@ -1,0 +1,65 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Contacto · Mate Raíz"
+  description="Escribinos por cualquier consulta sobre tu mate, el envío o el proceso de compra."
+>
+  <section class="relative w-full py-24 md:py-32 lg:py-40">
+    <div class="mx-auto max-w-[1400px] px-5 md:px-10">
+      <div class="max-w-[65ch]" data-reveal>
+        <p class="mb-5 inline-flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.22em] text-copper">
+          <span aria-hidden="true" class="block h-px w-8 bg-copper"></span>
+          Contacto
+        </p>
+        <h1 class="font-display text-[40px] font-light leading-[1.05] tracking-[-0.01em] md:text-[60px] md:leading-[1.02]">
+          Escribinos,
+          <span class="italic text-copper">te respondemos en el día.</span>
+        </h1>
+        <p class="dropcap mt-6 text-[16px] leading-[1.7] text-ink-soft">
+          Si tenés una duda sobre un pedido, una combinación de variantes o un envío especial,
+          la forma más rápida es por mail. Si es algo urgente, también atendemos por WhatsApp.
+        </p>
+      </div>
+
+      <div class="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-8" data-reveal>
+        <div class="rounded-tl-[20px] rounded-br-[20px] border border-bone-200 bg-bone-100/60 p-6 md:p-8">
+          <p class="text-[11px] font-medium uppercase tracking-[0.22em] text-copper">Por mail</p>
+          <h2 class="mt-3 font-display text-[26px] font-light leading-tight">hola@mate-raiz.example</h2>
+          <p class="mt-3 text-[14px] leading-[1.6] text-ink-soft">
+            Respondemos consultas sobre el producto, devoluciones y envíos en el día hábil.
+          </p>
+          <a
+            href="mailto:hola@mate-raiz.example"
+            class="mt-5 inline-flex items-center gap-2 text-[13px] font-medium tracking-wide text-ink underline decoration-bone-300 decoration-1 underline-offset-[6px] transition-colors duration-300 hover:text-forest-700 hover:decoration-copper"
+          >
+            Enviar mail
+            <span aria-hidden="true">→</span>
+          </a>
+        </div>
+
+        <div class="rounded-tl-[20px] rounded-br-[20px] border border-bone-200 bg-bone-100/60 p-6 md:p-8">
+          <p class="text-[11px] font-medium uppercase tracking-[0.22em] text-copper">Por WhatsApp</p>
+          <h2 class="mt-3 font-display text-[26px] font-light leading-tight">+54 9 351 555 0104</h2>
+          <p class="mt-3 text-[14px] leading-[1.6] text-ink-soft">
+            Lunes a viernes de 10 a 18 hs. Para consultas rápidas y cotizaciones de envío especial.
+          </p>
+          <a
+            href="https://wa.me/5493515550104"
+            class="mt-5 inline-flex items-center gap-2 text-[13px] font-medium tracking-wide text-ink underline decoration-bone-300 decoration-1 underline-offset-[6px] transition-colors duration-300 hover:text-forest-700 hover:decoration-copper"
+          >
+            Abrir WhatsApp
+            <span aria-hidden="true">→</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="mt-12 rounded-tl-[20px] rounded-br-[20px] border border-bone-200 bg-bone-100/60 px-6 py-5 md:px-8" data-reveal>
+        <p class="text-[12px] uppercase tracking-[0.18em] text-ink-mute">
+          Si necesitás ayuda con un pedido existente, tené a mano el número de pedido (formato MR-XXXX).
+        </p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

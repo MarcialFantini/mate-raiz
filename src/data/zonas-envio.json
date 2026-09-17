@@ -1,0 +1,92 @@
+{
+  "zonas": [
+    {
+      "id": "caba",
+      "label": "CABA",
+      "description": "Capital Federal y toda la Ciudad de Buenos Aires.",
+      "rangos": [
+        { "min": 1000, "max": 1499 }
+      ],
+      "estandar": {
+        "cost": 3500,
+        "label": "Envío estándar",
+        "eta": "3 a 5 días hábiles",
+        "carrier": "Motomensajería propia"
+      },
+      "express": {
+        "cost": 6500,
+        "label": "Envío express",
+        "eta": "24 a 48 hs",
+        "carrier": "Motomensajería propia"
+      }
+    },
+    {
+      "id": "gba",
+      "label": "GBA",
+      "description": "Vicente López, San Isidro, San Fernando, Tigre, Pilar, Escobar, Morón, Hurlingham, Ituzaingó, La Matanza, Lanús, Lomas de Zamora, Avellaneda, Quilmes, Berazategui, Florencio Varela, Esteban Echeverría, Ezeiza, Cañuelas, Merlo, Moreno, Tres de Febrero, San Martín, José C. Paz, Malvinas Argentinas, San Miguel.",
+      "rangos": [
+        { "min": 1600, "max": 1899 }
+      ],
+      "estandar": {
+        "cost": 5500,
+        "label": "Envío estándar",
+        "eta": "3 a 5 días hábiles",
+        "carrier": "Correo Argentino"
+      },
+      "express": {
+        "cost": 9500,
+        "label": "Envío express",
+        "eta": "24 a 48 hs",
+        "carrier": "Motomensajería propia"
+      }
+    },
+    {
+      "id": "interior-ba",
+      "label": "Interior de Buenos Aires",
+      "description": "Resto de la provincia de Buenos Aires fuera del AMBA.",
+      "rangos": [
+        { "min": 1900, "max": 1999 },
+        { "min": 2700, "max": 2899 }
+      ],
+      "estandar": {
+        "cost": 8500,
+        "label": "Envío estándar",
+        "eta": "5 a 7 días hábiles",
+        "carrier": "Correo Argentino"
+      },
+      "express": {
+        "cost": 14500,
+        "label": "Envío express",
+        "eta": "48 a 72 hs",
+        "carrier": "Transportista privado"
+      }
+    },
+    {
+      "id": "resto-pais",
+      "label": "Resto del país",
+      "description": "Todas las provincias fuera de Buenos Aires (Córdoba, Santa Fe, Mendoza, etc.).",
+      "rangos": [
+        { "min": 2000, "max": 2599 },
+        { "min": 3000, "max": 3999 },
+        { "min": 4000, "max": 4999 },
+        { "min": 5000, "max": 5999 },
+        { "min": 6000, "max": 6999 },
+        { "min": 7000, "max": 7999 },
+        { "min": 8000, "max": 8999 },
+        { "min": 9000, "max": 9999 }
+      ],
+      "estandar": {
+        "cost": 12500,
+        "label": "Envío estándar",
+        "eta": "5 a 9 días hábiles",
+        "carrier": "Correo Argentino / Transportista"
+      },
+      "express": {
+        "cost": 22000,
+        "label": "Envío express",
+        "eta": "3 a 5 días hábiles",
+        "carrier": "Transportista privado"
+      }
+    }
+  ]
+}

@@ -1,0 +1,403 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import pedidosData from '../../data/pedidos.json';
+
+export const prerender = false;
+
+interface EstadoHistoria {
+  estado: 'preparando' | 'en_camino' | 'entregado';
+  fecha: string;
+  titulo: string;
+  detalle: string;
+}
+
+interface Pedido {
+  id: string;
+  fechaCreacion: string;
+  cliente: { nombre: string; email: string };
+  direccion: {
+    calle: string;
+    ciudad: string;
+    provincia: string;
+    cp: string;
+  };
+  producto: {
+    modelo: string;
+    madera: string;
+    virola: string;
+    grabado: string;
+    textoGrabado: string;
+    cantidad: number;
+    precioUnitario: number;
+  };
+  envio: {
+    tipo: 'estandar' | 'express';
+    carrier: string;
+    tracking: string;
+    costo: number;
+    eta: string;
+  };
+  total: number;
+  estado: 'preparando' | 'en_camino' | 'entregado';
+  estadoHistoria: EstadoHistoria[];
+}
+
+const { id } = Astro.params;
+const idSafe = (id ?? '').trim();
+const pedido = (pedidosData.pedidos as Pedido[]).find((p) => p.id === idSafe) ?? null;
+
+// Si no existe, devolvemos 404. Astro renderizará src/pages/404.astro.
+if (!pedido) {
+  return new Response(null, {
+    status: 404,
+    statusText: 'Not Found',
+  });
+}
+
+const STATUS_ORDER: Pedido['estado'][] = ['preparando', 'en_camino', 'entregado'];
+const STATUS_LABEL: Record<Pedido['estado'], string> = {
+  preparando: 'En preparación',
+  en_camino: 'En camino',
+  entregado: 'Entregado',
+};
+
+const headerCopy: Record<Pedido['estado'], string> = {
+  preparando: 'Tu mate está en preparación.',
+  en_camino: 'Tu pedido está en camino.',
+  entregado: 'Pedido entregado.',
+};
+
+const statusIndex = STATUS_ORDER.indexOf(pedido.estado);
+const createdDate = new Date(pedido.fechaCreacion);
+const dateFormatter = new Intl.DateTimeFormat('es-AR', {
+  day: '2-digit',
+  month: 'long',
+  year: 'numeric',
+});
+const dateFormatterShort = new Intl.DateTimeFormat('es-AR', {
+  day: '2-digit',
+  month: 'short',
+});
+const currencyFormatter = new Intl.NumberFormat('es-AR', { maximumFractionDigits: 0 });
+
+function formatCurrency(amount: number): string {
+  return `$ ${currencyFormatter.format(Math.round(amount))}`;
+}
+
+function formatDateTime(iso: string): string {
+  try {
+    const d = new Date(iso);
+    return `${dateFormatter.format(d)} · ${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')} hs`;
+  } catch {
+    return iso;
+  }
+}
+
+function formatShort(iso: string): string {
+  try {
+    return dateFormatterShort.format(new Date(iso));
+  } catch {
+    return iso;
+  }
+}
+
+const currentStatusLabel = STATUS_LABEL[pedido.estado];
+---
+
+<BaseLayout
+  title={`Pedido ${pedido.id} · Mate Raíz`}
+  description={`Seguimiento del pedido ${pedido.id}. ${headerCopy[pedido.estado]}`}
+>
+  <section class="relative w-full py-16 md:py-24">
+    <div class="mx-auto max-w-[1400px] px-5 md:px-10">
+      <!-- Breadcrumb -->
+      <nav aria-label="Volver" class="mb-8 text-[12px] uppercase tracking-[0.18em] text-ink-mute">
+        <a href="/" class="transition-colors duration-300 hover:text-copper">← Volver al mate</a>
+      </nav>
+
+      <!-- Header -->
+      <header class="mb-12 max-w-[60ch]" data-reveal>
+        <p class="mb-5 inline-flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.22em] text-copper">
+          <span aria-hidden="true" class="block h-px w-8 bg-copper"></span>
+          Pedido · {pedido.id}
+        </p>
+        <h1 class="font-display text-[40px] font-light leading-[1.05] tracking-[-0.01em] md:text-[60px] md:leading-[1.02]">
+          <span class="italic text-copper">{headerCopy[pedido.estado]}</span>
+        </h1>
+        <p class="mt-4 text-[14px] uppercase tracking-[0.18em] text-ink-mute">
+          Realizado el {dateFormatter.format(createdDate)} · {pedido.cliente.nombre}
+        </p>
+      </header>
+
+      <!-- Disclaimer (visible por ser demo) -->
+      <aside
+        class="mb-12 rounded-tl-[14px] rounded-br-[14px] border border-bone-200 bg-bone-100/60 px-5 py-4 text-[13px] leading-[1.6] text-ink-soft"
+        role="note"
+      >
+        <p>
+          <span class="font-medium text-ink">Los datos de envío y seguimiento son de demostración.</span>
+          En producción se conectan al sistema del transportista para reflejar el estado en tiempo real.
+        </p>
+      </aside>
+
+      <!-- Layout principal: 2 columnas -->
+      <div class="grid grid-cols-1 gap-12 md:grid-cols-12 md:gap-10">
+        <!-- Columna izquierda: timeline + producto + CTA -->
+        <div class="md:col-span-7 lg:col-span-8">
+          <!-- Timeline -->
+          <section aria-labelledby="timeline-heading" class="mb-12">
+            <h2 id="timeline-heading" class="mb-6 text-[12px] font-medium uppercase tracking-[0.18em] text-ink-soft">
+              Estado del envío
+            </h2>
+            <ol class="relative space-y-6">
+              {STATUS_ORDER.map((state, idx) => {
+                const historyEntry = pedido.estadoHistoria.find((e) => e.estado === state);
+                const isCompleted = idx < statusIndex;
+                const isCurrent = idx === statusIndex;
+                const isPending = idx > statusIndex;
+                const radiiClasses = [
+                  'rounded-tl-[18px] rounded-br-[18px]',
+                  'rounded-tr-[18px] rounded-bl-[18px]',
+                  'rounded-tl-[18px] rounded-br-[18px]',
+                ];
+                return (
+                  <li
+                    class={`flex gap-5 border border-bone-200 px-5 py-5 md:px-6 md:py-6 ${radiiClasses[idx]} ${
+                      isCurrent ? 'border-copper/40 bg-bone-100/60' : 'bg-bone-100/30'
+                    }`}
+                  >
+                    <div class="flex flex-col items-center">
+                      <span
+                        aria-hidden="true"
+                        class={`flex h-9 w-9 items-center justify-center rounded-full text-[12px] font-medium uppercase tracking-wider ${
+                          isCompleted
+                            ? 'bg-forest-700 text-bone'
+                            : isCurrent
+                              ? 'bg-copper text-bone'
+                              : 'border border-bone-300 text-ink-mute'
+                        }`}
+                      >
+                        {isCompleted ? '✓' : idx + 1}
+                      </span>
+                      {idx < STATUS_ORDER.length - 1 && (
+                        <span
+                          aria-hidden="true"
+                          class={`mt-2 block w-px flex-1 ${isCompleted ? 'bg-forest-700' : 'bg-bone-200'}`}
+                        />
+                      )}
+                    </div>
+                    <div class="flex-1 pt-1">
+                      <div class="flex flex-wrap items-baseline justify-between gap-2">
+                        <p
+                          class={`font-display text-[22px] font-medium leading-tight md:text-[26px] ${
+                            isPending ? 'text-ink-mute' : 'text-ink'
+                          }`}
+                        >
+                          {historyEntry?.titulo ?? STATUS_LABEL[state]}
+                        </p>
+                        <p
+                          class={`text-[11px] uppercase tracking-[0.18em] ${
+                            isCurrent ? 'text-copper' : 'text-ink-mute'
+                          }`}
+                        >
+                          {historyEntry ? formatShort(historyEntry.fecha) : 'Pendiente'}
+                        </p>
+                      </div>
+                      <p
+                        class={`mt-2 text-[14px] leading-[1.6] ${
+                          isPending ? 'text-ink-mute italic' : 'text-ink-soft'
+                        }`}
+                      >
+                        {historyEntry?.detalle ?? '—'}
+                      </p>
+                      {historyEntry && (
+                        <p class="mt-2 text-[11px] uppercase tracking-[0.18em] text-ink-mute">
+                          {formatDateTime(historyEntry.fecha)}
+                        </p>
+                      )}
+                    </div>
+                  </li>
+                );
+              })}
+            </ol>
+          </section>
+
+          <!-- Producto -->
+          <section aria-labelledby="producto-heading" class="mb-12">
+            <h2 id="producto-heading" class="mb-6 text-[12px] font-medium uppercase tracking-[0.18em] text-ink-soft">
+              Tu pieza
+            </h2>
+            <article class="rounded-tl-[20px] rounded-br-[20px] border border-bone-200 bg-bone-100/40 p-6 md:p-8">
+              <div class="grid grid-cols-1 gap-8 md:grid-cols-12 md:gap-6">
+                <div class="md:col-span-5">
+                  <div class="overflow-hidden asymmetric-frame rounded-tl-[24px] rounded-tr-[6px] rounded-bl-[6px] rounded-br-[24px] bg-bone-200">
+                    <img
+                      src={`https://picsum.photos/seed/mate-raiz-pedido-${pedido.id}/800/900`}
+                      alt={`Foto del mate del pedido ${pedido.id}`}
+                      width="800"
+                      height="900"
+                      loading="lazy"
+                      decoding="async"
+                      class="editorial-img aspect-[8/9] h-full w-full object-cover"
+                    />
+                  </div>
+                </div>
+                <div class="md:col-span-7">
+                  <p class="text-[12px] uppercase tracking-[0.18em] text-copper">
+                    {pedido.producto.modelo}
+                  </p>
+                  <h3 class="mt-2 font-display text-[28px] font-light leading-tight md:text-[34px]">
+                    {pedido.producto.madera !== 'Algarrobo' || pedido.producto.virola !== 'Alpaca' || pedido.producto.grabado !== 'Sin grabado'
+                      ? 'Tu configuración a medida'
+                      : 'Mate Imperial · virola de alpaca'}
+                  </h3>
+
+                  <dl class="mt-6 grid grid-cols-1 gap-y-3 text-[14px] sm:grid-cols-2 sm:gap-x-6">
+                    <div class="flex justify-between border-b border-bone-200 pb-2 sm:border-none sm:pb-0">
+                      <dt class="text-ink-mute">Madera</dt>
+                      <dd class="font-medium text-ink">{pedido.producto.madera}</dd>
+                    </div>
+                    <div class="flex justify-between border-b border-bone-200 pb-2 sm:border-none sm:pb-0">
+                      <dt class="text-ink-mute">Virola</dt>
+                      <dd class="font-medium text-ink">{pedido.producto.virola}</dd>
+                    </div>
+                    <div class="flex justify-between border-b border-bone-200 pb-2 sm:border-none sm:pb-0">
+                      <dt class="text-ink-mute">Grabado</dt>
+                      <dd class="font-medium text-ink">
+                        {pedido.producto.grabado}
+                        {pedido.producto.textoGrabado && (
+                          <span class="block italic text-copper">"{pedido.producto.textoGrabado}"</span>
+                        )}
+                      </dd>
+                    </div>
+                    <div class="flex justify-between">
+                      <dt class="text-ink-mute">Cantidad</dt>
+                      <dd class="font-medium text-ink">{pedido.producto.cantidad}</dd>
+                    </div>
+                  </dl>
+
+                  <div class="mt-6 flex items-baseline justify-between border-t border-bone-200 pt-4">
+                    <span class="text-[12px] uppercase tracking-[0.18em] text-ink-mute">Precio unitario</span>
+                    <span class="font-display text-[22px] font-light text-ink">
+                      {formatCurrency(pedido.producto.precioUnitario)}
+                    </span>
+                  </div>
+
+                  <a
+                    href="/#comprar"
+                    class="mt-6 inline-flex items-center gap-2 text-[13px] font-medium tracking-wide text-ink underline decoration-bone-300 decoration-1 underline-offset-[6px] transition-colors duration-300 hover:text-forest-700 hover:decoration-copper"
+                  >
+                    Ver el modelo en la tienda
+                    <span aria-hidden="true">→</span>
+                  </a>
+                </div>
+              </div>
+            </article>
+          </section>
+
+          <!-- CTA principal -->
+          <section aria-labelledby="cta-heading" class="rounded-tl-[20px] rounded-br-[20px] border border-bone-200 bg-forest-900 p-6 text-bone md:p-8">
+            <h2 id="cta-heading" class="font-display text-[24px] font-light leading-tight md:text-[30px]">
+              ¿Querés ver el estado en tiempo real?
+            </h2>
+            <p class="mt-3 max-w-[50ch] text-[14px] leading-[1.6] text-bone/85">
+              Próximamente vas a poder seguir tu pedido con el código de tracking del transportista.
+            </p>
+            <div class="mt-6 flex flex-wrap items-center gap-3">
+              <a
+                href={`/rastrear/${pedido.envio.tracking}`}
+                class="cta-push inline-flex items-center gap-3 rounded-full bg-copper px-7 py-3.5 text-[14px] font-medium tracking-wide text-bone hover:bg-copper-deep"
+                aria-label={`Ver estado actualizado del tracking ${pedido.envio.tracking} (próximamente)`}
+              >
+                Ver estado actualizado
+                <span aria-hidden="true" class="inline-flex h-7 w-7 items-center justify-center rounded-full bg-bone/20 text-[12px] leading-none">↗</span>
+              </a>
+              <span class="text-[12px] uppercase tracking-[0.18em] text-bone/55">
+                Próximamente
+              </span>
+            </div>
+          </section>
+        </div>
+
+        <!-- Columna derecha: sidebar con datos de envío -->
+        <aside class="md:col-span-5 lg:col-span-4">
+          <div class="sticky top-24 space-y-6">
+            <!-- Número de pedido + tracking -->
+            <div class="rounded-tl-[18px] rounded-br-[18px] border border-bone-200 bg-bone-100/50 p-6">
+              <p class="text-[11px] font-medium uppercase tracking-[0.22em] text-copper">Tu pedido</p>
+              <p class="mt-2 font-display text-[28px] font-light leading-none text-ink">
+                {pedido.id}
+              </p>
+              <dl class="mt-5 space-y-3 text-[14px]">
+                <div>
+                  <dt class="text-[11px] uppercase tracking-[0.18em] text-ink-mute">Tracking</dt>
+                  <dd class="mt-1 font-mono text-[15px] font-medium tracking-wider text-ink">
+                    {pedido.envio.tracking}
+                  </dd>
+                </div>
+                <div>
+                  <dt class="text-[11px] uppercase tracking-[0.18em] text-ink-mute">Estado actual</dt>
+                  <dd class="mt-1 font-display text-[18px] italic text-copper">{currentStatusLabel}</dd>
+                </div>
+              </dl>
+            </div>
+
+            <!-- Datos de envío -->
+            <div class="rounded-tl-[18px] rounded-br-[18px] border border-bone-200 bg-bone-100/50 p-6">
+              <p class="text-[11px] font-medium uppercase tracking-[0.22em] text-copper">Envío</p>
+              <dl class="mt-4 space-y-3 text-[14px]">
+                <div>
+                  <dt class="text-[11px] uppercase tracking-[0.18em] text-ink-mute">Destinatario</dt>
+                  <dd class="mt-1 text-ink">{pedido.cliente.nombre}</dd>
+                </div>
+                <div>
+                  <dt class="text-[11px] uppercase tracking-[0.18em] text-ink-mute">Dirección</dt>
+                  <dd class="mt-1 text-ink">
+                    {pedido.direccion.calle}<br />
+                    {pedido.direccion.ciudad}, {pedido.direccion.provincia}<br />
+                    <span class="font-mono tracking-wider">CP {pedido.direccion.cp}</span>
+                  </dd>
+                </div>
+                <div>
+                  <dt class="text-[11px] uppercase tracking-[0.18em] text-ink-mute">Transportista</dt>
+                  <dd class="mt-1 text-ink">{pedido.envio.carrier}</dd>
+                </div>
+                <div>
+                  <dt class="text-[11px] uppercase tracking-[0.18em] text-ink-mute">Tiempo estimado</dt>
+                  <dd class="mt-1 text-ink">{pedido.envio.eta}</dd>
+                </div>
+                <div>
+                  <dt class="text-[11px] uppercase tracking-[0.18em] text-ink-mute">Costo de envío</dt>
+                  <dd class="mt-1 text-ink">{formatCurrency(pedido.envio.costo)}</dd>
+                </div>
+              </dl>
+            </div>
+
+            <!-- Resumen de pago -->
+            <div class="rounded-tl-[18px] rounded-br-[18px] border border-bone-200 bg-bone-100/50 p-6">
+              <p class="text-[11px] font-medium uppercase tracking-[0.22em] text-copper">Resumen</p>
+              <dl class="mt-4 space-y-3 text-[14px]">
+                <div class="flex items-baseline justify-between gap-3">
+                  <dt class="text-ink-soft">Producto</dt>
+                  <dd class="font-medium text-ink">
+                    {formatCurrency(pedido.producto.precioUnitario * pedido.producto.cantidad)}
+                  </dd>
+                </div>
+                <div class="flex items-baseline justify-between gap-3">
+                  <dt class="text-ink-soft">Envío</dt>
+                  <dd class="font-medium text-ink">{formatCurrency(pedido.envio.costo)}</dd>
+                </div>
+                <div class="mt-2 flex items-baseline justify-between gap-3 border-t border-bone-200 pt-3">
+                  <dt class="text-[12px] font-medium uppercase tracking-[0.18em] text-ink-soft">Total</dt>
+                  <dd class="font-display text-[26px] font-light text-ink">
+                    {formatCurrency(pedido.total)}
+                  </dd>
+                </div>
+              </dl>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

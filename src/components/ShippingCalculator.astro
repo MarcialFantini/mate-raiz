@@ -1,0 +1,160 @@
+---
+/**
+ * Calculadora de envío. Lee el código postal del usuario y le muestra el
+ * costo + tiempo estimado según la zona (CABA / GBA / Interior BA / Resto).
+ * Acumula al total del checkout vía el store compartido.
+ */
+---
+
+<div
+  id="shipping-calculator"
+  class="rounded-tl-[24px] rounded-br-[24px] border border-bone-200 bg-bone-100/60 p-5 md:p-6"
+  data-reveal
+>
+  <header class="mb-4 flex items-baseline justify-between gap-3">
+    <p class="text-[11px] font-medium uppercase tracking-[0.22em] text-copper">
+      Calculadora de envío
+    </p>
+    <p class="text-[11px] uppercase tracking-[0.18em] text-ink-mute">CP argentino · 4 dígitos</p>
+  </header>
+
+  <div class="flex flex-col gap-4 md:flex-row md:items-end md:gap-3">
+    <label class="flex flex-1 flex-col gap-1.5">
+      <span class="text-[12px] font-medium uppercase tracking-[0.18em] text-ink-soft">Código postal</span>
+      <input
+        type="text"
+        inputmode="numeric"
+        pattern="\d{4}"
+        maxlength="4"
+        autocomplete="postal-code"
+        placeholder="Ej: 1425"
+        id="shipping-cp"
+        aria-describedby="shipping-feedback"
+        class="h-11 w-full rounded-full border border-bone-200 bg-bone px-4 text-[15px] font-medium tracking-wider text-ink placeholder:text-ink-mute/60 focus:border-copper focus:outline-none focus:ring-1 focus:ring-copper"
+      />
+    </label>
+
+    <div class="flex flex-col gap-1.5" role="radiogroup" aria-label="Tipo de envío">
+      <span class="text-[12px] font-medium uppercase tracking-[0.18em] text-ink-soft">Modalidad</span>
+      <div class="inline-flex overflow-hidden rounded-full border border-bone-200 bg-bone-100">
+        <button
+          type="button"
+          role="radio"
+          aria-checked="true"
+          data-tipo="estandar"
+          id="ship-estandar"
+          class="cta-push h-11 px-4 text-[13px] font-medium tracking-wide text-ink-soft hover:bg-bone hover:text-forest-700 aria-checked:bg-forest-700 aria-checked:text-bone"
+        >
+          Estándar
+        </button>
+        <button
+          type="button"
+          role="radio"
+          aria-checked="false"
+          data-tipo="express"
+          id="ship-express"
+          class="cta-push h-11 px-4 text-[13px] font-medium tracking-wide text-ink-soft hover:bg-bone hover:text-forest-700 aria-checked:bg-forest-700 aria-checked:text-bone"
+        >
+          Express
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div
+    id="shipping-feedback"
+    role="status"
+    aria-live="polite"
+    class="mt-4 min-h-[2.5rem] text-[14px] leading-[1.6] text-ink-soft"
+  >
+    <p class="italic text-ink-mute">
+      Ingresá tu código postal para ver el costo y el tiempo estimado.
+    </p>
+  </div>
+</div>
+
+<script>
+  import {
+    getShippingState,
+    subscribeShipping,
+    setShipping,
+    findZoneByCP,
+    isValidCP,
+    formatARS,
+  } from '../scripts/shipping-store';
+
+  const cpInput = document.getElementById('shipping-cp') as HTMLInputElement | null;
+  const standarBtn = document.getElementById('ship-estandar');
+  const expressBtn = document.getElementById('ship-express');
+  const feedback = document.getElementById('shipping-feedback');
+
+  function render(state: ReturnType<typeof getShippingState>) {
+    if (!feedback) return;
+    const cpRaw = state.cp;
+    if (cpRaw.length === 0) {
+      feedback.innerHTML =
+        '<p class="italic text-ink-mute">Ingresá tu código postal para ver el costo y el tiempo estimado.</p>';
+      return;
+    }
+    if (!isValidCP(cpRaw)) {
+      feedback.innerHTML =
+        '<p class="text-ink-soft">El código postal debe tener 4 dígitos.</p>';
+      return;
+    }
+    const zona = findZoneByCP(cpRaw);
+    if (!zona) {
+      feedback.innerHTML = `
+        <p class="rounded-tl-[12px] rounded-br-[12px] border border-copper/30 bg-bone-50/60 px-4 py-3 text-ink-soft">
+          <span class="font-medium text-copper">No llegamos a este código postal todavía.</span>
+          Escribinos por WhatsApp para cotizar un envío especial.
+        </p>`;
+      return;
+    }
+    const option = state.tipo === 'express' ? zona.express : zona.estandar;
+    const other = state.tipo === 'express' ? zona.estandar : zona.express;
+    feedback.innerHTML = `
+      <div class="grid gap-2">
+        <p class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+          <span class="font-display text-[28px] font-light leading-none text-ink">${formatARS(option.cost)}</span>
+          <span class="text-[12px] uppercase tracking-[0.18em] text-ink-mute">${option.label}</span>
+        </p>
+        <p class="text-[13px] text-ink-soft">
+          <span class="font-medium text-ink">${option.eta}</span> · ${option.carrier}
+          <span class="text-ink-mute"> · Zona ${zona.label}</span>
+        </p>
+        <p class="text-[12px] text-ink-mute">
+          ${state.tipo === 'express' ? 'Estándar' : 'Express'}: ${formatARS(other.cost)} (${other.eta})
+        </p>
+      </div>`;
+  }
+
+  // Hidratar input desde el store
+  const initial = getShippingState();
+  if (cpInput) cpInput.value = initial.cp;
+  if (standarBtn && expressBtn) {
+    standarBtn.setAttribute('aria-checked', String(initial.tipo === 'estandar'));
+    expressBtn.setAttribute('aria-checked', String(initial.tipo === 'express'));
+  }
+  render(initial);
+  subscribeShipping(render);
+
+  // Escuchar cambios en el input
+  if (cpInput) {
+    cpInput.addEventListener('input', () => {
+      const raw = cpInput.value.replace(/\D/g, '').slice(0, 4);
+      if (raw !== cpInput.value) cpInput.value = raw;
+      setShipping({ cp: raw });
+    });
+  }
+
+  // Botones de tipo de envío
+  function selectTipo(tipo: 'estandar' | 'express') {
+    if (standarBtn && expressBtn) {
+      standarBtn.setAttribute('aria-checked', String(tipo === 'estandar'));
+      expressBtn.setAttribute('aria-checked', String(tipo === 'express'));
+    }
+    setShipping({ tipo });
+  }
+  standarBtn?.addEventListener('click', () => selectTipo('estandar'));
+  expressBtn?.addEventListener('click', () => selectTipo('express'));
+</script>

@@ -1,0 +1,188 @@
+{
+  "pedidos": [
+    {
+      "id": "MR-1042",
+      "fechaCreacion": "2026-09-10",
+      "cliente": {
+        "nombre": "Martín R.",
+        "email": "martin.r@example.com"
+      },
+      "direccion": {
+        "calle": "Av. Santa Fe 3214, 4° B",
+        "ciudad": "Capital Federal",
+        "provincia": "CABA",
+        "cp": "1425"
+      },
+      "producto": {
+        "modelo": "Torpedo",
+        "madera": "Algarrobo",
+        "virola": "Alpaca",
+        "grabado": "Sin grabado",
+        "textoGrabado": "",
+        "cantidad": 1,
+        "precioUnitario": 41000
+      },
+      "envio": {
+        "tipo": "estandar",
+        "carrier": "Motomensajería propia",
+        "tracking": "MT-7821-AR",
+        "costo": 3500,
+        "eta": "3 a 5 días hábiles"
+      },
+      "total": 44500,
+      "estado": "preparando",
+      "estadoHistoria": [
+        {
+          "estado": "preparando",
+          "fecha": "2026-09-10T10:30:00",
+          "titulo": "Pedido recibido",
+          "detalle": "Tu mate está siendo terminado a mano en el taller de Villa Carlos Paz. Tiempo estimado de preparación: 48 hs hábiles."
+        }
+      ]
+    },
+    {
+      "id": "MR-1041",
+      "fechaCreacion": "2026-09-08",
+      "cliente": {
+        "nombre": "Florencia Q.",
+        "email": "flor.q@example.com"
+      },
+      "direccion": {
+        "calle": "Belgrano 812",
+        "ciudad": "Vicente López",
+        "provincia": "Buenos Aires",
+        "cp": "1638"
+      },
+      "producto": {
+        "modelo": "Criollo clásico",
+        "madera": "Mora",
+        "virola": "Plata 925",
+        "grabado": "Iniciales",
+        "textoGrabado": "FQ",
+        "cantidad": 1,
+        "precioUnitario": 57000
+      },
+      "envio": {
+        "tipo": "express",
+        "carrier": "Motomensajería propia",
+        "tracking": "MT-7798-AR",
+        "costo": 9500,
+        "eta": "24 a 48 hs"
+      },
+      "total": 66500,
+      "estado": "en_camino",
+      "estadoHistoria": [
+        {
+          "estado": "preparando",
+          "fecha": "2026-09-08T14:20:00",
+          "titulo": "Pedido recibido",
+          "detalle": "Tu pedido entró a producción. Grabado incluido."
+        },
+        {
+          "estado": "en_camino",
+          "fecha": "2026-09-12T09:00:00",
+          "titulo": "En camino",
+          "detalle": "Salió del taller esta mañana. Motomensajería propia, entrega en mano."
+        }
+      ]
+    },
+    {
+      "id": "MR-1037",
+      "fechaCreacion": "2026-08-25",
+      "cliente": {
+        "nombre": "Joaquín D.",
+        "email": "joa.d@example.com"
+      },
+      "direccion": {
+        "calle": "Mitre 540",
+        "ciudad": "Mendoza",
+        "provincia": "Mendoza",
+        "cp": "5500"
+      },
+      "producto": {
+        "modelo": "Camionero",
+        "madera": "Guayacán",
+        "virola": "Alpaca",
+        "grabado": "Frase corta",
+        "textoGrabado": "ruta y compañía",
+        "cantidad": 1,
+        "precioUnitario": 50600
+      },
+      "envio": {
+        "tipo": "estandar",
+        "carrier": "Correo Argentino",
+        "tracking": "CA-44810-AR",
+        "costo": 12500,
+        "eta": "5 a 9 días hábiles"
+      },
+      "total": 63100,
+      "estado": "entregado",
+      "estadoHistoria": [
+        {
+          "estado": "preparando",
+          "fecha": "2026-08-25T16:00:00",
+          "titulo": "Pedido recibido",
+          "detalle": "Empezamos a tornear la pieza."
+        },
+        {
+          "estado": "en_camino",
+          "fecha": "2026-08-30T11:15:00",
+          "titulo": "En camino",
+          "detalle": "Entregado al correo en la sucursal de Córdoba."
+        },
+        {
+          "estado": "entregado",
+          "fecha": "2026-09-03T15:42:00",
+          "titulo": "Entregado",
+          "detalle": "Recibido por Joaquín D. en calle Mitre 540, Mendoza."
+        }
+      ]
+    },
+    {
+      "id": "MR-1040",
+      "fechaCreacion": "2026-09-04",
+      "cliente": {
+        "nombre": "Soledad P.",
+        "email": "sol.p@example.com"
+      },
+      "direccion": {
+        "calle": "Pasaje Güemes 220, dto 2",
+        "ciudad": "Córdoba Capital",
+        "provincia": "Córdoba",
+        "cp": "5000"
+      },
+      "producto": {
+        "modelo": "Bombilla suelta",
+        "madera": "Algarrobo",
+        "virola": "Sin virola",
+        "grabado": "Sin grabado",
+        "textoGrabado": "",
+        "cantidad": 2,
+        "precioUnitario": 14500
+      },
+      "envio": {
+        "tipo": "estandar",
+        "carrier": "Transportista privado",
+        "tracking": "TP-2210-AR",
+        "costo": 12500,
+        "eta": "5 a 9 días hábiles"
+      },
+      "total": 41500,
+      "estado": "en_camino",
+      "estadoHistoria": [
+        {
+          "estado": "preparando",
+          "fecha": "2026-09-04T12:00:00",
+          "titulo": "Pedido recibido",
+          "detalle": "Dos bombillas de alpaca con boquilla de bronce en preparación."
+        },
+        {
+          "estado": "en_camino",
+          "fecha": "2026-09-09T08:30:00",
+          "titulo": "En camino",
+          "detalle": "Despachadas por transportista privado. Llega entre jueves y lunes."
+        }
+      ]
+    }
+  ]
+}
