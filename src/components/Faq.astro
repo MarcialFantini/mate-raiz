@@ -2,36 +2,40 @@
 import faqs from '../data/faq.json';
 ---
 
-<section id="preguntas" class="relative w-full bg-bone-100/40 py-24 md:py-32 lg:py-40">
+<section id="preguntas" class="relative w-full bg-bone-100/60 py-24 md:py-32 lg:py-40">
   <div class="mx-auto max-w-[1400px] px-5 md:px-10">
     <div class="grid grid-cols-1 gap-12 md:grid-cols-12 md:gap-10">
       <div class="md:col-span-4" data-reveal>
+        <p class="mb-5 inline-flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.22em] text-copper">
+          <span aria-hidden="true" class="block h-px w-8 bg-copper"></span>
+          Capítulo 05 · Preguntas
+        </p>
         <h2 class="font-display text-[40px] font-light leading-[1.05] tracking-[-0.01em] md:text-[56px] md:leading-[1.02]">
           Preguntas
-          <span class="block italic">frecuentes.</span>
+          <span class="block italic text-copper">frecuentes.</span>
         </h2>
-        <p class="mt-5 max-w-[36ch] text-[15px] leading-relaxed text-ink-soft">
+        <p class="dropcap mt-6 max-w-[36ch] text-[15px] leading-[1.7] text-ink-soft">
           Si tenés una consulta que no está acá, escribinos a hola@mate-raiz.example y te respondemos en el día.
         </p>
       </div>
 
       <div class="md:col-span-8">
-        <ul class="divide-y divide-bone-200 border-t border-bone-200" data-reveal>
+        <ul class="border-t border-bone-200" data-reveal>
           {
             faqs.faqs.map((faq) => (
-              <li>
+              <li class="border-b border-bone-200">
                 <details class="group py-2">
                   <summary class="flex items-start justify-between gap-6 py-5 text-left transition-colors duration-300 hover:text-forest-700">
                     <span class="font-display text-[20px] font-medium leading-snug md:text-[24px]">{faq.question}</span>
                     <span
                       aria-hidden="true"
-                      class="faq-icon mt-2 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-bone-300 text-[14px] leading-none text-ink-soft"
+                      class="faq-icon mt-2 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-bone-200 text-[14px] leading-none text-ink-soft"
                     >
                       +
                     </span>
                   </summary>
                   <div class="pb-6 pr-12">
-                    <p class="max-w-[60ch] text-[15px] leading-relaxed text-ink-soft">{faq.answer}</p>
+                    <p class="max-w-[60ch] text-[15px] leading-[1.7] text-ink-soft">{faq.answer}</p>
                   </div>
                 </details>
               </li>

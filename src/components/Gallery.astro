@@ -6,6 +6,7 @@ const photos = [
     height: 1400,
     alt: 'Detalle macro de la virola de alpaca pulida a mano',
     span: 'md:col-span-7 md:row-span-2',
+    radii: 'rounded-tl-[36px] rounded-tr-[8px] rounded-bl-[8px] rounded-br-[36px]',
   },
   {
     src: 'https://picsum.photos/seed/mate-raiz-boca-interior/900/900',
@@ -13,6 +14,7 @@ const photos = [
     height: 900,
     alt: 'Vista cenital del interior del mate mostrando el color del algarrobo',
     span: 'md:col-span-5',
+    radii: 'rounded-tl-[8px] rounded-tr-[28px] rounded-bl-[28px] rounded-br-[8px]',
   },
   {
     src: 'https://picsum.photos/seed/mate-raiz-base-curado/900/900',
@@ -20,6 +22,7 @@ const photos = [
     height: 900,
     alt: 'Base del mate torneado mostrando la veta natural del algarrobo',
     span: 'md:col-span-5',
+    radii: 'rounded-tl-[28px] rounded-tr-[8px] rounded-bl-[8px] rounded-br-[28px]',
   },
   {
     src: 'https://picsum.photos/seed/mate-raiz-taller-luz/1600/900',
@@ -27,26 +30,33 @@ const photos = [
     height: 900,
     alt: 'Mate apoyado sobre el banco del taller con luz de tarde entrando por la ventana',
     span: 'md:col-span-7',
+    radii: 'rounded-tl-[8px] rounded-tr-[32px] rounded-bl-[32px] rounded-br-[8px]',
   },
 ];
 ---
 
-<section id="galeria" class="relative w-full bg-bone-100/40 py-24 md:py-32 lg:py-40">
+<section id="galeria" class="relative w-full bg-bone-100/60 py-24 md:py-32 lg:py-40">
   <div class="mx-auto max-w-[1400px] px-5 md:px-10">
     <div class="mb-14 flex flex-wrap items-end justify-between gap-6 md:mb-20">
-      <h2 class="font-display text-[40px] font-light leading-[1.05] tracking-[-0.01em] md:text-[56px] md:leading-[1.02]" data-reveal>
-        Galería
-      </h2>
-      <p class="max-w-[36ch] text-[15px] leading-relaxed text-ink-soft" data-reveal>
+      <div data-reveal>
+        <p class="mb-4 inline-flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.22em] text-copper">
+          <span aria-hidden="true" class="block h-px w-8 bg-copper"></span>
+          Capítulo 03 · La luz
+        </p>
+        <h2 class="font-display text-[40px] font-light leading-[1.05] tracking-[-0.01em] md:text-[56px] md:leading-[1.02]">
+          Galería
+        </h2>
+      </div>
+      <p class="max-w-[36ch] text-[15px] leading-[1.6] text-ink-soft" data-reveal>
         Fotos del mate en distintas luces. La madera cambia de tono a lo largo del día.
       </p>
     </div>
 
-    <ul class="grid grid-cols-1 gap-3 md:auto-rows-[280px] md:grid-cols-12 md:gap-4 lg:auto-rows-[340px] lg:gap-5">
+    <ul class="grid grid-cols-1 gap-4 md:auto-rows-[280px] md:grid-cols-12 md:gap-5 lg:auto-rows-[340px] lg:gap-6">
       {
         photos.map((photo) => (
           <li
-            class={`group relative overflow-hidden rounded-[20px] bg-bone-200 ring-1 ring-bone-300/40 ${photo.span}`}
+            class={`group relative overflow-hidden asymmetric-frame bg-bone-200 ${photo.span} ${photo.radii}`}
             data-reveal
           >
             <img

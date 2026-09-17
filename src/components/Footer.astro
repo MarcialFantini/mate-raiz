@@ -2,45 +2,46 @@
 const year = new Date().getFullYear();
 ---
 
-<footer class="border-t border-bone-200 bg-bone-50 pt-16 pb-10">
+<footer class="border-t border-bone-200 bg-bone pt-16 pb-10">
   <div class="mx-auto max-w-[1400px] px-5 md:px-10">
     <div class="grid grid-cols-1 gap-10 md:grid-cols-12 md:gap-8">
       <div class="md:col-span-5">
-        <p class="font-display text-3xl tracking-tight text-forest-900 md:text-[34px]">
+        <p class="font-display text-3xl tracking-tight text-forest-700 md:text-[34px]">
           Mate<span class="italic font-light">Raíz</span>
         </p>
-        <p class="mt-4 max-w-[40ch] text-[14px] leading-relaxed text-ink-soft">
+        <span aria-hidden="true" class="mt-3 block h-px w-16 bg-copper"></span>
+        <p class="mt-4 max-w-[40ch] text-[14px] leading-[1.6] text-ink-soft">
           Mate imperial con virola de alpaca, hecho a torno en las Sierras de Córdoba.
         </p>
       </div>
 
       <div class="md:col-span-3">
-        <p class="text-[11px] font-medium uppercase tracking-[0.22em] text-ink-soft">Navegación</p>
+        <p class="text-[11px] font-medium uppercase tracking-[0.22em] text-ink-mute">Navegación</p>
         <ul class="mt-4 space-y-2 text-[14px]">
-          <li><a href="#historia" class="text-ink transition-colors duration-300 hover:text-forest-700">El oficio</a></li>
-          <li><a href="#detalles" class="text-ink transition-colors duration-300 hover:text-forest-700">Detalles</a></li>
-          <li><a href="#galeria" class="text-ink transition-colors duration-300 hover:text-forest-700">Galería</a></li>
-          <li><a href="#comprar" class="text-ink transition-colors duration-300 hover:text-forest-700">Comprar</a></li>
+          <li><a href="#historia" class="text-ink transition-colors duration-300 hover:text-copper">El oficio</a></li>
+          <li><a href="#detalles" class="text-ink transition-colors duration-300 hover:text-copper">Detalles</a></li>
+          <li><a href="#galeria" class="text-ink transition-colors duration-300 hover:text-copper">Galería</a></li>
+          <li><a href="#comprar" class="text-ink transition-colors duration-300 hover:text-copper">Comprar</a></li>
         </ul>
       </div>
 
       <div class="md:col-span-4">
-        <p class="text-[11px] font-medium uppercase tracking-[0.22em] text-ink-soft">Contacto</p>
+        <p class="text-[11px] font-medium uppercase tracking-[0.22em] text-ink-mute">Contacto</p>
         <ul class="mt-4 space-y-2 text-[14px]">
           <li>
-            <a href="mailto:hola@mate-raiz.example" class="text-ink transition-colors duration-300 hover:text-forest-700">
+            <a href="mailto:hola@mate-raiz.example" class="text-ink transition-colors duration-300 hover:text-copper">
               hola@mate-raiz.example
             </a>
           </li>
           <li>
-            <a href="#preguntas" class="text-ink transition-colors duration-300 hover:text-forest-700">Preguntas frecuentes</a>
+            <a href="#preguntas" class="text-ink transition-colors duration-300 hover:text-copper">Preguntas frecuentes</a>
           </li>
-          <li class="text-ink-soft">Sierras de Córdoba, Argentina</li>
+          <li class="text-ink-mute">Sierras de Córdoba, Argentina</li>
         </ul>
       </div>
     </div>
 
-    <div class="mt-12 flex flex-wrap items-center justify-between gap-4 border-t border-bone-200 pt-6 text-[12px] uppercase tracking-[0.18em] text-ink-soft">
+    <div class="mt-12 flex flex-wrap items-center justify-between gap-4 border-t border-bone-200 pt-6 text-[12px] uppercase tracking-[0.18em] text-ink-mute">
       <p>© {year} Mate Raíz · Taller artesanal</p>
       <p>Hecho en Argentina</p>
     </div>

@@ -32,3 +32,5 @@ Thumbs.db
 
 # Project-specific: lead capture data (PII simulada, no debe commitearse)
 data/leads.json
+
+.vercel
