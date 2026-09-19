@@ -1,0 +1,203 @@
+---
+/**
+ * Detalle de post · Mate Raíz
+ *
+ * Renderiza el contenido markdown de un post de la colección `blog`.
+ * `getStaticPaths` genera una ruta por cada post, deshabilitado el SSR para
+ * que los posts se prerenderean en build (mejor SEO y cache).
+ *
+ * Metadata mostrada: fecha, autor, categoría.
+ */
+
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import { getCollection, render } from 'astro:content';
+
+export const prerender = true;
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return posts.map((post) => ({
+    params: { slug: post.id },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+
+const dateFormatter = new Intl.DateTimeFormat('es-AR', {
+  day: '2-digit',
+  month: 'long',
+  year: 'numeric',
+});
+
+const CATEGORY_LABEL: Record<string, string> = {
+  cuidados: 'Cuidados',
+  cultura: 'Cultura',
+  oficio: 'Oficio',
+  guia: 'Guía',
+};
+---
+
+<BaseLayout
+  title={`${post.data.title} · Mate Raíz`}
+  description={post.data.description}
+>
+  <article class="relative w-full pt-10 pb-16 md:pt-16 md:pb-24">
+    <div class="mx-auto max-w-[1400px] px-5 md:px-10">
+      <Breadcrumbs
+        items={[
+          { label: 'Inicio', href: '/' },
+          { label: 'Blog', href: '/blog' },
+          { label: post.data.title },
+        ]}
+      />
+
+      <!-- Hero del post -->
+      <header class="mx-auto max-w-[820px]" data-reveal>
+        <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-[11px] uppercase tracking-[0.18em] text-ink-mute">
+          <span>{dateFormatter.format(post.data.pubDate)}</span>
+          <span aria-hidden="true" class="h-px w-4 bg-bone-300"></span>
+          <span>{CATEGORY_LABEL[post.data.category] ?? post.data.category}</span>
+          <span aria-hidden="true" class="h-px w-4 bg-bone-300"></span>
+          <span>{post.data.author}</span>
+        </div>
+        <h1 class="mt-5 font-display text-[40px] font-light leading-[1.05] tracking-[-0.01em] md:text-[64px] md:leading-[1.02]">
+          {post.data.title}
+        </h1>
+        <p class="dropcap mt-6 text-[17px] leading-[1.7] text-ink-soft md:text-[18px]">
+          {post.data.description}
+        </p>
+      </header>
+
+      <!-- Cover -->
+      <figure class="mx-auto mt-12 max-w-[1200px]" data-reveal>
+        <div class="overflow-hidden asymmetric-frame bg-bone-100 rounded-tl-[28px] rounded-tr-[8px] rounded-bl-[8px] rounded-br-[28px]">
+          <img
+            src={post.data.image}
+            alt={post.data.imageAlt}
+            width="1400"
+            height="900"
+            loading="eager"
+            fetchpriority="high"
+            decoding="async"
+            class="editorial-img aspect-[14/9] h-full w-full object-cover"
+          />
+        </div>
+      </figure>
+
+      <!-- Body -->
+      <div
+        class="prose-mate mx-auto mt-12 max-w-[680px] text-[17px] leading-[1.75] text-ink-soft md:mt-16 md:text-[18px]"
+        data-reveal
+      >
+        <Content />
+      </div>
+
+      <!-- Footer / volver -->
+      <div class="mx-auto mt-16 flex max-w-[680px] flex-wrap items-center justify-between gap-4 border-t border-bone-200 pt-8 md:mt-20">
+        <a
+          href="/blog"
+          class="cta-push inline-flex items-center gap-2 rounded-full border border-bone-200 bg-bone-100/60 px-5 py-2.5 text-[13px] font-medium tracking-wide text-ink hover:bg-bone hover:text-forest-700"
+        >
+          ← Volver al blog
+        </a>
+
+        {
+          post.data.tags && post.data.tags.length > 0 && (
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="text-[11px] uppercase tracking-[0.18em] text-ink-mute">Tags</span>
+              {post.data.tags.map((tag) => (
+                <span class="rounded-full border border-bone-200 bg-bone px-3 py-1 text-[11px] font-medium uppercase tracking-[0.16em] text-ink-soft">
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )
+        }
+      </div>
+    </div>
+  </article>
+</BaseLayout>
+
+<style is:global>
+  /* Estilos editoriales para el markdown renderizado. Limitado a esta página
+     vía scope: la clase .prose-mate solo se aplica al body del post. */
+  .prose-mate h2 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 1.8rem;
+    line-height: 1.15;
+    color: var(--color-ink);
+    margin-top: 2.4em;
+    margin-bottom: 0.6em;
+    letter-spacing: -0.005em;
+  }
+  .prose-mate h3 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 1.35rem;
+    line-height: 1.2;
+    color: var(--color-ink);
+    margin-top: 2em;
+    margin-bottom: 0.4em;
+  }
+  .prose-mate p {
+    margin-bottom: 1.2em;
+  }
+  .prose-mate strong {
+    color: var(--color-ink);
+    font-weight: 600;
+  }
+  .prose-mate em {
+    font-family: var(--font-display);
+    font-style: italic;
+    color: var(--color-copper-deep);
+  }
+  .prose-mate a {
+    color: var(--color-forest-700);
+    text-decoration: underline;
+    text-decoration-color: var(--color-copper);
+    text-underline-offset: 4px;
+    transition: color 250ms ease;
+  }
+  .prose-mate a:hover {
+    color: var(--color-copper-deep);
+  }
+  .prose-mate ol,
+  .prose-mate ul {
+    margin: 1em 0 1.4em;
+    padding-left: 1.5em;
+  }
+  .prose-mate ol > li,
+  .prose-mate ul > li {
+    margin-bottom: 0.6em;
+    padding-left: 0.4em;
+  }
+  .prose-mate ol > li::marker {
+    color: var(--color-copper);
+    font-family: var(--font-display);
+    font-weight: 500;
+  }
+  .prose-mate ul > li::marker {
+    color: var(--color-copper);
+  }
+  .prose-mate blockquote {
+    border-left: 2px solid var(--color-copper);
+    padding-left: 1.2em;
+    margin: 1.6em 0;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 1.2em;
+    color: var(--color-ink);
+  }
+  .prose-mate code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    background-color: var(--color-bone-100);
+    padding: 0.15em 0.4em;
+    border-radius: 4px;
+    font-size: 0.92em;
+    color: var(--color-ink);
+  }
+</style>

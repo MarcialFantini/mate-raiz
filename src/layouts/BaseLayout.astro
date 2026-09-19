@@ -6,12 +6,23 @@ import Footer from '../components/Footer.astro';
 interface Props {
   title?: string;
   description?: string;
+  image?: string;
+  type?: 'website' | 'article' | 'product';
 }
 
 const {
   title = 'Mate Raíz · Mate imperial con virola de alpaca',
   description = 'Mate imperial torneado a mano en algarrobo, con virola de alpaca. Una pieza para el ritual de todos los días. Envío a todo el país.',
+  image = '/og-default.svg',
+  type = 'website',
 } = Astro.props;
+
+// Canonical absoluto a partir de la URL actual. Astro.url.href ya trae
+// protocolo + host (proxy-aware en SSR). Fallback al origin del header.
+const canonical = Astro.url.href;
+const ogImage = image.startsWith('http')
+  ? image
+  : new URL(image, Astro.url.origin).toString();
 ---
 
 <!doctype html>
@@ -21,9 +32,23 @@ const {
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#1F3A2E" />
     <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+
+    <!-- Open Graph -->
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={type} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:locale" content="es_AR" />
+    <meta property="og:site_name" content="Mate Raíz" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{title}</title>
   </head>

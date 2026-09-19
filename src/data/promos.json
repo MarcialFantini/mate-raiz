@@ -1,0 +1,32 @@
+{
+  "promos": [
+    {
+      "code": "RAIZ10",
+      "percent": 10,
+      "label": "10% off · bienvenida",
+      "minSubtotal": 0,
+      "active": true
+    },
+    {
+      "code": "MATEPARA2",
+      "percent": 15,
+      "label": "15% off · comprá dos o más mates",
+      "minSubtotal": 60000,
+      "active": true
+    },
+    {
+      "code": "AMIGOS",
+      "percent": 8,
+      "label": "8% off · regalo para un amigo",
+      "minSubtotal": 0,
+      "active": true
+    },
+    {
+      "code": "EXPIRED",
+      "percent": 20,
+      "label": "20% off · código expirado",
+      "minSubtotal": 0,
+      "active": false
+    }
+  ]
+}

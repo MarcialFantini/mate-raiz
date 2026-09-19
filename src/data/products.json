@@ -1,0 +1,255 @@
+{
+  "products": [
+    {
+      "id": "mate-imperial-virola-alpaca",
+      "slug": "imperial-virola-alpaca",
+      "name": "Mate Imperial",
+      "subtitle": "Virola de alpaca. Hecho a torno.",
+      "tagline": "Una pieza única para un ritual de todos los días.",
+      "model": "criollo-clasico",
+      "category": "imperial",
+      "price": {
+        "amount": 38500,
+        "currency": "ARS",
+        "formatted": "$ 38.500",
+        "installments": "3 cuotas sin interés de $ 12.833"
+      },
+      "description": "Mate imperial tallado en una sola pieza de algarrobo curado durante dieciocho meses. Virola trabajada en alpaca pulida a mano. Capacidad para entre 220 y 240 gramos de yerba. Boquilla de bronce con terminación mate.",
+      "images": [
+        {
+          "src": "https://picsum.photos/seed/mate-raiz-imperial-virola/1200/1400",
+          "alt": "Mate imperial de algarrobo con virola de alpaca, apoyado sobre un fondo oscuro",
+          "width": 1200,
+          "height": 1400
+        },
+        {
+          "src": "https://picsum.photos/seed/mate-raiz-virola-alpaca-detalle/1100/1400",
+          "alt": "Detalle macro de la virola de alpaca pulida a mano",
+          "width": 1100,
+          "height": 1400
+        },
+        {
+          "src": "https://picsum.photos/seed/mate-raiz-boca-interior/900/900",
+          "alt": "Vista cenital del interior del mate mostrando el color del algarrobo",
+          "width": 900,
+          "height": 900
+        },
+        {
+          "src": "https://picsum.photos/seed/mate-raiz-taller-luz/1600/900",
+          "alt": "Mate apoyado sobre el banco del taller con luz de tarde entrando por la ventana",
+          "width": 1600,
+          "height": 900
+        }
+      ],
+      "specs": [
+        { "label": "Madera", "value": "Algarrobo", "detail": "Cosechado en Córdoba. Curado 18 meses antes del torneado." },
+        { "label": "Virola", "value": "Alpaca 925", "detail": "Laminada y pulida a mano. Aleación sin níquel." },
+        { "label": "Capacidad", "value": "230 g", "detail": "Pensado para compartir o para cebadas largas en solitario." },
+        { "label": "Altura", "value": "9.4 cm", "detail": "Proporción imperial clásica. Ergonómico para la mano." },
+        { "label": "Diámetro de boca", "value": "6.8 cm", "detail": "Compatible con bombillas estándar y con cueros gruesos." },
+        { "label": "Peso", "value": "184 g", "detail": "Equilibrado. Se siente con cuerpo sin cansar la muñeca." },
+        { "label": "Acabado", "value": "Aceite de tung", "detail": "Tres manos. Protección natural, sin lacas sintéticas." },
+        { "label": "Curado", "value": "Listo para usar", "detail": "Curado en fábrica. No requiere proceso previo en casa." }
+      ],
+      "story": "El Imperial es nuestra silueta más reconocible. La forma clásica, paredes finas, la base apenas marcada. Es el mate que está en la foto del taller, el que vuelve solo cuando lo prestás. Cada Imperial sale de un bloque único de algarrobo curado dieciocho meses.",
+      "process": [
+        {
+          "step": 1,
+          "title": "Selección de la madera",
+          "body": "Cada bloque de algarrobo se elige por veta, densidad y peso. Descartamos cerca del cuarenta por ciento antes de empezar."
+        },
+        {
+          "step": 2,
+          "title": "Curado controlado",
+          "body": "Dieciocho meses en galpón ventilado. La madera pierde humedad de manera pareja para no fisurarse al tornear."
+        },
+        {
+          "step": 3,
+          "title": "Torneado a mano",
+          "body": "El torneado se hace pieza por pieza. Cada mate lleva entre tres y cuatro horas de trabajo manual sobre el torno."
+        },
+        {
+          "step": 4,
+          "title": "Virola de alpaca",
+          "body": "La virola se lamina, se ajusta a medida y se pule hasta obtener un brillo mate. No usamos lacas ni barnices industriales."
+        },
+        {
+          "step": 5,
+          "title": "Acabado al aceite",
+          "body": "Tres manos de aceite de tung aplicadas con tiempos de secado de veinticuatro horas entre cada una."
+        },
+        {
+          "step": 6,
+          "title": "Curado final",
+          "body": "Antes de salir del taller, el mate se cura durante siete días en un protocolo de yerba y agua para llegar listo para usar."
+        }
+      ],
+      "care": [
+        "Lavar con agua tibia después de cada uso. Secar boca abajo sobre un paño.",
+        "No dejar la yerba usada más de 24 horas dentro del mate.",
+        "Una vez al mes, aceitar el exterior con aceite de tung o aceite de coco puro.",
+        "Evitar exposición directa al sol durante períodos largos para conservar el tono de la madera."
+      ],
+      "maker": {
+        "name": "Taller Raíz",
+        "location": "Sierras de Córdoba, Argentina",
+        "since": "2009",
+        "story": "Trabajamos el algarrobo desde hace quince años en un galpón a las afueras de Villa Carlos Paz. El equipo es chico: cuatro personas, dos tornos, una mesa de lija larga. Hacemos pocos mates y los hacemos bien."
+      },
+      "featured": true,
+      "availableWoods": ["calden", "algarrobo", "mora", "guayacan"],
+      "availableRings": ["alpaca", "plata-925", "sin-virola"],
+      "availableEngravings": ["ninguno", "iniciales", "frase"],
+      "outOfStock": [
+        { "model": "criollo-clasico", "wood": "mora", "ring": "sin-virola", "reason": "El contraste de veta oscura con virola de alpaca es nuestra recomendación." }
+      ]
+    },
+    {
+      "id": "mate-torpedo-mora",
+      "slug": "torpedo-mora",
+      "name": "Mate Torpedo",
+      "subtitle": "Mora oscura. Virola de alpaca.",
+      "tagline": "Base ancha, boca angosta. Para la mano grande.",
+      "model": "torpedo",
+      "category": "torpedo",
+      "price": {
+        "amount": 46500,
+        "currency": "ARS",
+        "formatted": "$ 46.500",
+        "installments": "3 cuotas sin interés de $ 15.500"
+      },
+      "description": "Silueta torpedo en madera de mora con veta oscura contrastante. La forma se ensancha en la base y se afina en la boca, descansando firme en la mesa. Virola de alpaca con terminación mate.",
+      "images": [
+        {
+          "src": "https://picsum.photos/seed/mate-raiz-torpedo-mora/1200/1400",
+          "alt": "Mate torpedo de madera mora con virola de alpaca, sobre un paño crudo",
+          "width": 1200,
+          "height": 1400
+        },
+        {
+          "src": "https://picsum.photos/seed/mate-raiz-torpedo-veta/1100/1100",
+          "alt": "Detalle de la veta oscura de la madera mora",
+          "width": 1100,
+          "height": 1100
+        },
+        {
+          "src": "https://picsum.photos/seed/mate-raiz-torpedo-base/900/1200",
+          "alt": "Base ancha del mate torpedo apoyada sobre la mesa",
+          "width": 900,
+          "height": 1200
+        }
+      ],
+      "specs": [
+        { "label": "Madera", "value": "Mora", "detail": "Veta oscura, contrastante. Estable frente a la humedad." },
+        { "label": "Virola", "value": "Alpaca 925", "detail": "Laminada y pulida a mano. Aleación sin níquel." },
+        { "label": "Capacidad", "value": "260 g", "detail": "Boca angosta, base ancha. La yerba se asienta parejo." },
+        { "label": "Altura", "value": "10.2 cm", "detail": "Un poco más alto que el imperial. Estable en la mano." },
+        { "label": "Diámetro de boca", "value": "5.6 cm", "detail": "Compatible con bombillas estándar." },
+        { "label": "Peso", "value": "212 g", "detail": "Cuerpo presente. Se siente robusto sin ser pesado." },
+        { "label": "Acabado", "value": "Aceite de tung", "detail": "Tres manos. Protección natural." },
+        { "label": "Curado", "value": "Listo para usar", "detail": "Curado en fábrica. Protocolo de yerba y agua de 7 días." }
+      ],
+      "story": "El Torpedo en mora es para los que buscan algo con más cuerpo. La base ancha le da estabilidad en la mesa y la boca angosta concentra el calor. La madera de mora trae una veta oscura, casi negra, que contrasta con la alpaca.",
+      "availableWoods": ["algarrobo", "mora", "guayacan"],
+      "availableRings": ["alpaca", "plata-925"],
+      "availableEngravings": ["ninguno", "iniciales", "frase"],
+      "outOfStock": []
+    },
+    {
+      "id": "mate-camionero-pampa",
+      "slug": "camionero-pampa",
+      "name": "Mate Camionero",
+      "subtitle": "Paredes gruesas. Hecho para viajar.",
+      "tagline": "Robusto, estable, para uso intensivo.",
+      "model": "camionero",
+      "category": "camionero",
+      "price": {
+        "amount": 40300,
+        "currency": "ARS",
+        "formatted": "$ 40.300",
+        "installments": "3 cuotas sin interés de $ 13.433"
+      },
+      "description": "Mate camionero de paredes gruesas, en caldén o algarrobo. La forma resiste mejor los golpes del viaje y del día a día. Virola de alpaca. Capacidad generosa para cebadas largas.",
+      "images": [
+        {
+          "src": "https://picsum.photos/seed/mate-raiz-camionero-pampa/1200/1400",
+          "alt": "Mate camionero de algarrobo con virola de alpaca, sobre una mesa rústica",
+          "width": 1200,
+          "height": 1400
+        },
+        {
+          "src": "https://picsum.photos/seed/mate-raiz-camionero-virola/1100/1100",
+          "alt": "Detalle de la virola gruesa del mate camionero",
+          "width": 1100,
+          "height": 1100
+        },
+        {
+          "src": "https://picsum.photos/seed/mate-raiz-camionero-uso/1600/900",
+          "alt": "Mate camionero apoyado junto a una bombilla sobre un banco de trabajo",
+          "width": 1600,
+          "height": 900
+        }
+      ],
+      "specs": [
+        { "label": "Madera", "value": "Caldén o algarrobo", "detail": "Elegís en el paso siguiente. Dureza extrema." },
+        { "label": "Virola", "value": "Alpaca 925", "detail": "Laminada y pulida a mano." },
+        { "label": "Capacidad", "value": "290 g", "detail": "Paredes gruesas. Aguanta mejor el uso intensivo." },
+        { "label": "Altura", "value": "9.8 cm", "detail": "Proporción robusta. Ergonómico." },
+        { "label": "Diámetro de boca", "value": "7.4 cm", "detail": "Boca generosa. Carga de yerba cómoda." },
+        { "label": "Peso", "value": "248 g", "detail": "Cuerpo. Se siente en la mano." },
+        { "label": "Acabado", "value": "Aceite de tung", "detail": "Tres manos. Protección reforzada." },
+        { "label": "Curado", "value": "Listo para usar", "detail": "Curado en fábrica." }
+      ],
+      "story": "El Camionero nació de un encargo: un mate que aguante un viaje largo en camioneta, golpes, sol de tarde. Lo hicimos con paredes gruesas, base ancha, boca generosa. Hoy es uno de los más pedidos.",
+      "availableWoods": ["calden", "algarrobo"],
+      "availableRings": ["alpaca", "plata-925", "sin-virola"],
+      "availableEngravings": ["ninguno", "iniciales", "frase"],
+      "outOfStock": [
+        { "model": "camionero", "wood": "guayacan", "reason": "Última partida agotada. Volvemos a producir en 3 semanas." }
+      ]
+    },
+    {
+      "id": "bombilla-alpaca",
+      "slug": "bombilla-alpaca",
+      "name": "Bombilla de Alpaca",
+      "subtitle": "Boquilla de bronce. Para completar tu mate.",
+      "tagline": "La pareja inseparable del mate imperial.",
+      "model": "bombilla-suelta",
+      "category": "accesorios",
+      "price": {
+        "amount": 14500,
+        "currency": "ARS",
+        "formatted": "$ 14.500",
+        "installments": "3 cuotas sin interés de $ 4.833"
+      },
+      "description": "Bombilla de alpaca con boquilla de bronce y filtro de agujeros finos. Largo estándar de 16.5 cm. Se adapta a cualquier mate de boca estándar.",
+      "images": [
+        {
+          "src": "https://picsum.photos/seed/mate-raiz-bombilla-alpaca/1100/1400",
+          "alt": "Bombilla de alpaca con boquilla de bronce apoyada sobre madera",
+          "width": 1100,
+          "height": 1400
+        },
+        {
+          "src": "https://picsum.photos/seed/mate-raiz-bombilla-detalle/1100/1100",
+          "alt": "Detalle de la boquilla de bronce pulida a mano",
+          "width": 1100,
+          "height": 1100
+        }
+      ],
+      "specs": [
+        { "label": "Material", "value": "Alpaca", "detail": "Aleación tradicional, sin níquel." },
+        { "label": "Boquilla", "value": "Bronce", "detail": "Terminación mate. Ergonómica en los labios." },
+        { "label": "Largo", "value": "16.5 cm", "detail": "Estándar. Compatible con todos nuestros mates." },
+        { "label": "Filtro", "value": "Agujeros finos", "detail": "Calado a mano. Filtra la yerba sin taparse." },
+        { "label": "Peso", "value": "32 g", "detail": "Liviana. No cansa el mate cuando cebás." },
+        { "label": "Acabado", "value": "Pulido mate", "detail": "Sin lacas. Pátina natural con el uso." }
+      ],
+      "story": "Una bombilla bien hecha cambia el mate. Esta sale de un tubo de alpaca cortado a mano, con boquilla de bronce torneada aparte. La usamos nosotros todos los días.",
+      "availableWoods": [],
+      "availableRings": [],
+      "availableEngravings": ["ninguno", "iniciales"],
+      "outOfStock": []
+    }
+  ]
+}

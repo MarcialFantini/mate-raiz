@@ -1,5 +1,8 @@
 ---
-import product from '../data/product.json';
+import { getFeaturedProduct } from '../scripts/catalog';
+
+const product = getFeaturedProduct();
+const careLines = product.care ?? [];
 ---
 
 <section id="detalles" class="relative w-full py-24 md:py-32 lg:py-40">
@@ -56,7 +59,7 @@ import product from '../data/product.json';
         </div>
         <ol class="space-y-3 md:col-span-8 md:pt-2">
           {
-            product.care.map((line, idx) => (
+            careLines.map((line, idx) => (
               <li class="flex gap-5 border border-bone-200 bg-bone px-5 py-4 rounded-tl-[18px] rounded-br-[18px]">
                 <span class="font-display text-[18px] font-light text-copper">{String(idx + 1).padStart(2, '0')}</span>
                 <span class="text-[15px] leading-[1.6] text-ink">{line}</span>

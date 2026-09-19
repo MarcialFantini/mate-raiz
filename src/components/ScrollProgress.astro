@@ -1,0 +1,37 @@
+---
+/**
+ * Barra fina de progreso de scroll. Aparece en la parte superior de la
+ * viewport cuando el usuario hace scroll. Respeta prefers-reduced-motion.
+ */
+---
+
+<div
+  id="scroll-progress"
+  aria-hidden="true"
+  class="fixed left-0 top-0 z-50 h-[2px] w-0 bg-copper transition-[width] duration-150 ease-out"
+></div>
+
+<script>
+  const bar = document.getElementById('scroll-progress');
+  if (bar) {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let ticking = false;
+    const update = (): void => {
+      const h = document.documentElement;
+      const max = h.scrollHeight - h.clientHeight;
+      const pct = max > 0 ? (h.scrollTop / max) * 100 : 0;
+      bar.style.width = `${pct.toFixed(2)}%`;
+      ticking = false;
+    };
+    const onScroll = (): void => {
+      if (!ticking) {
+        window.requestAnimationFrame(update);
+        ticking = true;
+      }
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    update();
+    if (reduce) bar.style.transition = 'none';
+  }
+</script>

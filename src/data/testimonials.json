@@ -1,0 +1,49 @@
+{
+  "testimonials": [
+    {
+      "id": "t-001",
+      "name": "Martín R.",
+      "location": "Palermo, CABA",
+      "since": "2024",
+      "rating": 5,
+      "body": "Llevo seis meses cebando con el Imperial de algarrobo. La madera cambió de tono, la alpaca agarró una pátina que me tiene enamorado. Es un objeto que mejora con el uso, no al revés.",
+      "product": "Mate Imperial"
+    },
+    {
+      "id": "t-002",
+      "name": "Florencia Q.",
+      "location": "Vicente López",
+      "since": "2025",
+      "rating": 5,
+      "body": "Le grabamos las iniciales a mi viejo para su cumple. Llegó en una caja hermosa, con una nota a mano del taller. El mate en sí es otra cosa: madera pesada, tacto cálido, bien terminado.",
+      "product": "Mate Torpedo"
+    },
+    {
+      "id": "t-003",
+      "name": "Joaquín D.",
+      "location": "Mendoza",
+      "since": "2025",
+      "rating": 5,
+      "body": "Compré un Camionero de guayacán pensando en un viaje a la Patagonia. Lo llevé cuatro días en la mochila sin un rasguño. La madera es impresionante, casi no se mancha.",
+      "product": "Mate Camionero"
+    },
+    {
+      "id": "t-004",
+      "name": "Soledad P.",
+      "location": "Córdoba Capital",
+      "since": "2024",
+      "rating": 5,
+      "body": "Encargue dos bombillas de alpaca para regalar. Embalaje cuidado, llegó al día siguiente. La gente de Mate Raíz contesta los mensajes y se nota que les importa el oficio.",
+      "product": "Bombilla de Alpaca"
+    },
+    {
+      "id": "t-005",
+      "name": "Camila A.",
+      "location": "Rosario",
+      "since": "2025",
+      "rating": 5,
+      "body": "Tengo tres mates de Mate Raíz. Uno para el escritorio, otro para el living, otro para la oficina. El ritual de elegir cuál usar es parte del día.",
+      "product": "Mate Imperial"
+    }
+  ]
+}

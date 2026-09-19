@@ -1,0 +1,122 @@
+---
+/**
+ * Índice del blog · Mate Raíz
+ *
+ * Lista todos los posts de la colección `blog` (definida en
+ * src/content.config.ts) ordenados por fecha descendente. Cada post se
+ * renderiza como una tarjeta editorial con título, fecha, descripción y un
+ * link al detalle.
+ */
+
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import { getCollection } from 'astro:content';
+
+export const prerender = false;
+
+const posts = (await getCollection('blog'))
+  .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+
+const dateFormatter = new Intl.DateTimeFormat('es-AR', {
+  day: '2-digit',
+  month: 'long',
+  year: 'numeric',
+});
+
+const CATEGORY_LABEL: Record<string, string> = {
+  cuidados: 'Cuidados',
+  cultura: 'Cultura',
+  oficio: 'Oficio',
+  guia: 'Guía',
+};
+---
+
+<BaseLayout
+  title="Blog · Mate Raíz"
+  description="Notas sobre el oficio, los cuidados del mate, la madera y el ritual. Por el equipo de Mate Raíz."
+>
+  <section class="relative w-full pt-10 pb-16 md:pt-16 md:pb-24">
+    <div class="mx-auto max-w-[1400px] px-5 md:px-10">
+      <Breadcrumbs items={[{ label: 'Inicio', href: '/' }, { label: 'Blog' }]} />
+
+      <div class="max-w-[68ch]" data-reveal>
+        <p class="mb-5 inline-flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.22em] text-copper">
+          <span aria-hidden="true" class="block h-px w-8 bg-copper"></span>
+          Blog · {posts.length} {posts.length === 1 ? 'nota' : 'notas'}
+        </p>
+        <h1 class="font-display text-[40px] font-light leading-[1.05] tracking-[-0.01em] md:text-[72px] md:leading-[1.02]">
+          Notas del
+          <span class="italic text-copper">taller.</span>
+        </h1>
+        <p class="dropcap mt-6 text-[16px] leading-[1.7] text-ink-soft md:text-[17px]">
+          Lo que aprendemos curando madera, recibiendo consultas de clientes y
+          equivocándonos con grabados. Anotado por el equipo de Mate Raíz.
+        </p>
+      </div>
+
+      <ul class="mt-16 grid grid-cols-1 gap-x-10 gap-y-14 md:mt-20 md:grid-cols-2 md:gap-y-16">
+        {
+          posts.map((post, idx) => {
+            const radii = [
+              'rounded-tl-[24px] rounded-tr-[6px] rounded-bl-[6px] rounded-br-[24px]',
+              'rounded-tl-[6px] rounded-tr-[24px] rounded-bl-[24px] rounded-br-[6px]',
+              'rounded-tl-[24px] rounded-tr-[6px] rounded-bl-[24px] rounded-br-[6px]',
+              'rounded-tl-[6px] rounded-tr-[24px] rounded-bl-[6px] rounded-br-[24px]',
+            ];
+            return (
+              <li data-reveal>
+                <a
+                  href={`/blog/${post.id}`}
+                  class="group block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-copper"
+                >
+                  <div
+                    class={`overflow-hidden asymmetric-frame bg-bone-100 ${radii[idx % radii.length]}`}
+                  >
+                    <img
+                      src={post.data.image}
+                      alt={post.data.imageAlt}
+                      width="1400"
+                      height="900"
+                      loading={idx === 0 ? 'eager' : 'lazy'}
+                      decoding="async"
+                      class="editorial-img aspect-[14/9] h-full w-full object-cover transition-transform duration-[1200ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.03]"
+                    />
+                  </div>
+                  <div class="mt-6">
+                    <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-[11px] uppercase tracking-[0.18em] text-ink-mute">
+                      <span>{dateFormatter.format(post.data.pubDate)}</span>
+                      <span aria-hidden="true" class="h-px w-4 bg-bone-300"></span>
+                      <span>{CATEGORY_LABEL[post.data.category] ?? post.data.category}</span>
+                    </div>
+                    <h2 class="mt-3 font-display text-[26px] font-light leading-[1.1] md:text-[34px]">
+                      {post.data.title}
+                    </h2>
+                    <p class="mt-3 max-w-[60ch] text-[15px] leading-[1.6] text-ink-soft">
+                      {post.data.description}
+                    </p>
+                    <p class="mt-4 text-[13px] font-medium tracking-wide text-forest-700 transition-colors duration-300 group-hover:text-copper">
+                      Leer nota <span aria-hidden="true">→</span>
+                    </p>
+                  </div>
+                </a>
+              </li>
+            );
+          })
+        }
+      </ul>
+
+      {
+        posts.length === 0 && (
+          <div class="mt-16 rounded-tl-[20px] rounded-br-[20px] border border-bone-200 bg-bone-100/60 px-6 py-12 text-center">
+            <p class="font-display text-[24px] font-light leading-tight md:text-[32px]">
+              Todavía no hay notas publicadas.
+            </p>
+            <p class="mx-auto mt-3 max-w-[44ch] text-[14px] leading-[1.6] text-ink-soft">
+              Estamos preparando las primeras. Si querés que escribamos sobre un tema en particular, escribinos.
+            </p>
+          </div>
+        )
+      }
+    </div>
+  </section>
+</BaseLayout>

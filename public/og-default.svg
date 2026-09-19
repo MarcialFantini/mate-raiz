@@ -1,0 +1,144 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630" role="img" aria-label="Mate Raíz — Mate artesanal con virola de alpaca">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1F3A2E" />
+      <stop offset="100%" stop-color="#11241A" />
+    </linearGradient>
+    <radialGradient id="glow" cx="78%" cy="40%" r="42%">
+      <stop offset="0%" stop-color="#B87333" stop-opacity="0.18" />
+      <stop offset="100%" stop-color="#B87333" stop-opacity="0" />
+    </radialGradient>
+    <pattern id="grain" width="3" height="3" patternUnits="userSpaceOnUse">
+      <rect width="3" height="3" fill="transparent" />
+      <circle cx="0.5" cy="0.5" r="0.4" fill="#F2EDE0" fill-opacity="0.04" />
+    </pattern>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)" />
+  <rect width="1200" height="630" fill="url(#glow)" />
+  <rect width="1200" height="630" fill="url(#grain)" />
+
+  <!-- Top hairline -->
+  <line x1="80" y1="80" x2="180" y2="80" stroke="#B87333" stroke-width="1" stroke-opacity="0.85" />
+
+  <!-- Eyebrow / kicker -->
+  <text
+    x="80"
+    y="120"
+    font-family="'Cormorant Garamond', 'Cormorant Garamond Variable', ui-serif, Georgia, serif"
+    font-size="18"
+    letter-spacing="5"
+    fill="#D49263"
+  >
+    EDICIÓN LIMITADA · HECHO EN CÓRDOBA
+  </text>
+
+  <!-- Main wordmark -->
+  <text
+    x="80"
+    y="320"
+    font-family="'Cormorant Garamond Variable', 'Cormorant Garamond', ui-serif, Georgia, serif"
+    font-size="120"
+    font-weight="400"
+    fill="#F2EDE0"
+    letter-spacing="-2"
+  >
+    Mate
+    <tspan font-style="italic" font-weight="300" fill="#D49263">Raíz</tspan>
+  </text>
+
+  <!-- Subhead -->
+  <text
+    x="80"
+    y="390"
+    font-family="'Cormorant Garamond Variable', 'Cormorant Garamond', ui-serif, Georgia, serif"
+    font-size="34"
+    font-style="italic"
+    font-weight="300"
+    fill="#F2EDE0"
+    fill-opacity="0.85"
+    letter-spacing="-0.5"
+  >
+    Mate artesanal con virola de alpaca
+  </text>
+
+  <!-- Description body -->
+  <text
+    x="80"
+    y="470"
+    font-family="'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, sans-serif"
+    font-size="20"
+    font-weight="400"
+    fill="#F2EDE0"
+    fill-opacity="0.7"
+  >
+    Torneado a mano en algarrobo curado dieciocho meses.
+  </text>
+  <text
+    x="80"
+    y="500"
+    font-family="'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, sans-serif"
+    font-size="20"
+    font-weight="400"
+    fill="#F2EDE0"
+    fill-opacity="0.7"
+  >
+    Para las cebadas que importan.
+  </text>
+
+  <!-- Bottom copper hairline + URL -->
+  <line x1="80" y1="560" x2="220" y2="560" stroke="#B87333" stroke-width="1" stroke-opacity="0.85" />
+  <text
+    x="80"
+    y="588"
+    font-family="'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, sans-serif"
+    font-size="16"
+    letter-spacing="3"
+    fill="#F2EDE0"
+    fill-opacity="0.55"
+  >
+    MATE-RAIZ.EXAMPLE
+  </text>
+
+  <!-- Decorative mate silhouette: subtle, abstract -->
+  <g transform="translate(880, 140)" opacity="0.55">
+    <!-- Body of the mate -->
+    <path
+      d="M 60 280 C 60 360 30 380 30 410 C 30 440 70 460 110 460 C 150 460 190 440 190 410 C 190 380 160 360 160 280 Z"
+      fill="none"
+      stroke="#B87333"
+      stroke-width="1.5"
+      stroke-opacity="0.6"
+    />
+    <!-- Mouth -->
+    <ellipse cx="110" cy="280" rx="50" ry="8" fill="none" stroke="#B87333" stroke-width="1.5" stroke-opacity="0.7" />
+    <!-- Alpaca ring -->
+    <path
+      d="M 56 300 C 56 312 56 318 56 326 L 164 326 C 164 318 164 312 164 300 Z"
+      fill="#B87333"
+      fill-opacity="0.18"
+      stroke="#B87333"
+      stroke-width="1"
+      stroke-opacity="0.85"
+    />
+    <!-- Wood grain hint -->
+    <path d="M 70 360 C 100 355 130 365 150 360" stroke="#B87333" stroke-width="0.8" stroke-opacity="0.4" fill="none" />
+    <path d="M 65 395 C 95 390 125 400 155 395" stroke="#B87333" stroke-width="0.8" stroke-opacity="0.35" fill="none" />
+    <path d="M 75 425 C 100 420 130 430 145 425" stroke="#B87333" stroke-width="0.8" stroke-opacity="0.3" fill="none" />
+  </g>
+
+  <!-- Bottom-right meta -->
+  <text
+    x="1120"
+    y="588"
+    text-anchor="end"
+    font-family="'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, sans-serif"
+    font-size="14"
+    letter-spacing="2.5"
+    fill="#F2EDE0"
+    fill-opacity="0.45"
+  >
+    TALLER ARTESANAL · SIERRAS DE CÓRDOBA
+  </text>
+</svg>

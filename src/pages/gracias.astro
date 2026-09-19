@@ -1,0 +1,155 @@
+---
+/**
+ * Página post-pago · Mate Raíz
+ *
+ * Recibe al visitante cuando vuelve de Mercado Pago con ?ref=XXX. La página
+ * es informativa: muestra el código de referencia, los próximos pasos y
+ * enlaces a soporte. El estado real de la orden se reconcilia desde el
+ * webhook (`/api/webhook`) — esta página NO consulta la API de MP por
+ * seguridad (un POST ?ref=XXX no debería disparar un GET contra MP).
+ *
+ * Estados soportados (vía querystring `status`):
+ *   - approved (default) → "Recibimos tu pago"
+ *   - pending            → "Tu pago está en proceso"
+ *   - failure            → "No pudimos procesar el pago"
+ */
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+
+export const prerender = false;
+
+const url = Astro.url;
+const ref = (url.searchParams.get('ref') ?? '').trim();
+const rawStatus = (url.searchParams.get('status') ?? 'approved').toLowerCase();
+const status: 'approved' | 'pending' | 'failure' =
+  rawStatus === 'pending' || rawStatus === 'failure' ? rawStatus : 'approved';
+
+const HEADLINE: Record<typeof status, { kicker: string; title: string; sub: string }> = {
+  approved: {
+    kicker: 'Pago confirmado',
+    title: 'Gracias por tu compra.',
+    sub: 'Recibimos tu pago y empezamos a preparar tu pieza en el taller de Villa Carlos Paz.',
+  },
+  pending: {
+    kicker: 'Pago en proceso',
+    title: 'Tu pago está en revisión.',
+    sub: 'Mercado Pago está terminando de procesarlo. Te avisamos por mail cuando se confirme.',
+  },
+  failure: {
+    kicker: 'No pudimos procesar el pago',
+    title: 'Algo falló con el proveedor.',
+    sub: 'El pago fue rechazado. Podés volver a intentarlo o escribirnos para ayudarte.',
+  },
+};
+
+const copy = HEADLINE[status];
+
+// La página no conoce el mapping ref → pedido (eso vive en pedidos.json);
+// mostramos la external_reference como código visible para que el visitante
+// la guarde.
+const orderRef = ref.length > 0 ? ref : '(sin referencia)';
+---
+
+<BaseLayout
+  title="Gracias · Mate Raíz"
+  description={`${copy.kicker} en Mate Raíz. ${copy.sub}`}
+>
+  <section class="relative w-full pt-10 pb-16 md:pt-16 md:pb-24">
+    <div class="mx-auto max-w-[1400px] px-5 md:px-10">
+      <Breadcrumbs items={[{ label: 'Inicio', href: '/' }, { label: 'Gracias' }]} />
+
+      <div class="mx-auto max-w-[68ch] text-center" data-reveal>
+        <p class="mb-5 inline-flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.22em] text-copper">
+          <span aria-hidden="true" class="block h-px w-8 bg-copper"></span>
+          {copy.kicker}
+        </p>
+        <h1 class="font-display text-[40px] font-light leading-[1.05] tracking-[-0.01em] md:text-[72px] md:leading-[1.02]">
+          {copy.title}
+        </h1>
+        <p class="dropcap mt-6 text-[16px] leading-[1.7] text-ink-soft">
+          {copy.sub}
+        </p>
+      </div>
+
+      <!-- Tarjeta de referencia -->
+      <article
+        class="mx-auto mt-12 max-w-[560px] rounded-tl-[24px] rounded-br-[24px] border border-bone-200 bg-bone-100/60 p-6 text-left md:p-8"
+        data-reveal
+      >
+        <p class="text-[11px] font-medium uppercase tracking-[0.22em] text-copper">Tu pedido</p>
+        <p class="mt-3 font-mono text-[15px] font-medium tracking-wider text-ink break-all">
+          {orderRef}
+        </p>
+        <p class="mt-3 text-[13px] leading-[1.6] text-ink-soft">
+          Guardá este código. Es la referencia que vas a usar para consultas o para hacer el seguimiento del envío.
+        </p>
+      </article>
+
+      <!-- Próximos pasos -->
+      <section
+        class="mx-auto mt-16 grid max-w-[920px] grid-cols-1 gap-4 md:grid-cols-3 md:gap-6"
+        data-reveal
+      >
+        <article class="rounded-tl-[20px] rounded-br-[20px] border border-bone-200 bg-bone-100/60 p-5 md:p-6">
+          <p class="font-display text-[18px] font-light text-copper">01</p>
+          <p class="mt-2 font-display text-[20px] font-medium leading-tight md:text-[22px]">
+            Te llega un email
+          </p>
+          <p class="mt-2 text-[14px] leading-[1.6] text-ink-soft">
+            Con el resumen del pedido y los datos de envío. Revisá la bandeja de promociones si no aparece en principal.
+          </p>
+        </article>
+        <article class="rounded-tl-[20px] rounded-br-[20px] border border-bone-200 bg-bone-100/60 p-5 md:p-6">
+          <p class="font-display text-[18px] font-light text-copper">02</p>
+          <p class="mt-2 font-display text-[20px] font-medium leading-tight md:text-[22px]">
+            Preparación a mano
+          </p>
+          <p class="mt-2 text-[14px] leading-[1.6] text-ink-soft">
+            Entre 48 y 72 hs hábiles. Cada pieza se termina a pedido. Te avisamos cuando salga del taller.
+          </p>
+        </article>
+        <article class="rounded-tl-[20px] rounded-br-[20px] border border-bone-200 bg-bone-100/60 p-5 md:p-6">
+          <p class="font-display text-[18px] font-light text-copper">03</p>
+          <p class="mt-2 font-display text-[20px] font-medium leading-tight md:text-[22px]">
+            Despacho + tracking
+          </p>
+          <p class="mt-2 text-[14px] leading-[1.6] text-ink-soft">
+            Recibís el código del transportista para hacer el seguimiento desde la página de rastreo.
+          </p>
+        </article>
+      </section>
+
+      <!-- CTAs -->
+      <div class="mt-12 flex flex-wrap items-center justify-center gap-3" data-reveal>
+        <a
+          href="/"
+          class="cta-push inline-flex items-center gap-3 rounded-full bg-forest-700 px-7 py-3.5 text-[14px] font-medium tracking-wide text-bone hover:bg-forest-900"
+        >
+          Volver al inicio
+          <span aria-hidden="true" class="inline-flex h-7 w-7 items-center justify-center rounded-full bg-bone/20 text-[12px] leading-none">↗</span>
+        </a>
+        <a
+          href="/contacto"
+          class="cta-push inline-flex items-center gap-3 rounded-full border border-bone-200 bg-bone-100/60 px-7 py-3.5 text-[14px] font-medium tracking-wide text-ink hover:bg-bone hover:text-forest-700"
+        >
+          Hablar con el taller
+        </a>
+        {
+          status === 'failure' && (
+            <a
+              href="/carrito"
+              class="cta-push inline-flex items-center gap-3 rounded-full border border-copper/40 bg-bone-50 px-7 py-3.5 text-[14px] font-medium tracking-wide text-ink hover:bg-bone hover:text-copper-deep"
+            >
+              Volver al carrito
+            </a>
+          )
+        }
+      </div>
+
+      <p class="mx-auto mt-12 max-w-[60ch] text-center text-[12px] uppercase tracking-[0.18em] text-ink-mute">
+        Si tenés una consulta, escribinos a hola@mate-raiz.example indicando este código.
+      </p>
+    </div>
+  </section>
+</BaseLayout>

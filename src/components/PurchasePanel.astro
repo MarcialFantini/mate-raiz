@@ -1,7 +1,9 @@
 ---
-import product from '../data/product.json';
+import { getFeaturedProduct } from '../scripts/catalog';
 import ShippingCalculator from './ShippingCalculator.astro';
 import variantsData from '../data/variants.json';
+
+const product = getFeaturedProduct();
 ---
 
 <section id="comprar" class="relative w-full py-24 md:py-32 lg:py-40">

@@ -1,0 +1,44 @@
+---
+/**
+ * Breadcrumbs editorial. Pasar un array de { label, href? }.
+ * El último ítem es la página actual (sin href).
+ */
+interface Crumb {
+  label: string;
+  href?: string;
+}
+interface Props {
+  items: Crumb[];
+}
+const { items } = Astro.props;
+---
+
+<nav
+  aria-label="Ruta de navegación"
+  class="mb-8 flex flex-wrap items-center gap-x-2 gap-y-1 text-[12px] uppercase tracking-[0.18em] text-ink-mute"
+>
+  <ol class="flex flex-wrap items-center gap-x-2 gap-y-1">
+    {
+      items.map((crumb, idx) => {
+        const isLast = idx === items.length - 1;
+        return (
+          <li class="flex items-center gap-x-2">
+            {crumb.href && !isLast ? (
+              <a
+                href={crumb.href}
+                class="transition-colors duration-300 hover:text-copper"
+              >
+                {crumb.label}
+              </a>
+            ) : (
+              <span aria-current={isLast ? 'page' : undefined} class={isLast ? 'text-ink' : ''}>
+                {crumb.label}
+              </span>
+            )}
+            {!isLast && <span aria-hidden="true" class="text-bone-300">/</span>}
+          </li>
+        );
+      })
+    }
+  </ol>
+</nav>

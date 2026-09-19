@@ -1,0 +1,693 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import ScrollProgress from '../../components/ScrollProgress.astro';
+import StickyCta from '../../components/StickyCta.astro';
+import ShippingCalculator from '../../components/ShippingCalculator.astro';
+import { getAllProducts, getProductBySlug, getProductOptions, formatARS } from '../../scripts/catalog';
+
+export const prerender = false;
+
+const { slug } = Astro.params;
+const product = slug ? getProductBySlug(slug) : undefined;
+
+if (!product) {
+  return new Response(null, { status: 404, statusText: 'Not Found' });
+}
+
+const options = getProductOptions(product);
+const cover = product.images[0];
+const otherProducts = getAllProducts()
+  .filter((p) => p.id !== product.id)
+  .slice(0, 3);
+---
+
+<BaseLayout
+  title={`${product.name} · Mate Raíz`}
+  description={product.description}
+  image={cover.src}
+  type="product"
+>
+  <ScrollProgress />
+
+  <script
+    type="application/ld+json"
+    is:inline
+    set:html={JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'Product',
+      name: product.name,
+      description: product.description,
+      sku: product.id,
+      mpn: product.id,
+      brand: { '@type': 'Brand', name: 'Mate Raíz' },
+      category: product.category,
+      image: product.images.map((i) => i.src),
+      offers: {
+        '@type': 'Offer',
+        url: new URL(`/producto/${product.slug}`, Astro.url.origin).toString(),
+        priceCurrency: product.price.currency,
+        price: product.price.amount,
+        availability:
+          product.outOfStock && product.outOfStock.length > 0
+            ? 'https://schema.org/OutOfStock'
+            : 'https://schema.org/InStock',
+        seller: { '@type': 'Organization', name: 'Mate Raíz' },
+      },
+    })}
+  />
+  <StickyCta
+    productName={product.name}
+    productSlug={product.slug}
+    priceLabel={`${product.price.formatted} · ${product.price.installments.split(' ')[0]}`}
+  />
+
+  <section class="relative w-full pt-10 pb-12 md:pt-16 md:pb-16">
+    <div class="mx-auto max-w-[1400px] px-5 md:px-10">
+      <Breadcrumbs
+        items={[
+          { label: 'Inicio', href: '/' },
+          { label: 'Catálogo', href: '/catalogo' },
+          { label: product.name },
+        ]}
+      />
+
+      <div class="grid grid-cols-1 gap-12 md:grid-cols-12 md:gap-10">
+        <!-- Gallery -->
+        <div class="md:col-span-7">
+          <div class="overflow-hidden asymmetric-frame bg-bone-100 rounded-tl-[36px] rounded-tr-[8px] rounded-bl-[8px] rounded-br-[36px]">
+            <img
+              src={cover.src}
+              alt={cover.alt}
+              width={cover.width}
+              height={cover.height}
+              loading="eager"
+              fetchpriority="high"
+              decoding="async"
+              class="editorial-img aspect-[6/7] h-full w-full object-cover"
+            />
+          </div>
+
+          {
+            product.images.length > 1 && (
+              <ul class="mt-4 grid grid-cols-3 gap-3 md:gap-4" data-reveal>
+                {product.images.slice(1).map((img, idx) => (
+                  <li
+                    class={`overflow-hidden asymmetric-frame bg-bone-100 ${
+                      idx % 2 === 0
+                        ? 'rounded-tl-[18px] rounded-br-[18px]'
+                        : 'rounded-tr-[18px] rounded-bl-[18px]'
+                    }`}
+                  >
+                    <img
+                      src={img.src}
+                      alt={img.alt}
+                      width={img.width}
+                      height={img.height}
+                      loading="lazy"
+                      decoding="async"
+                      class="editorial-img aspect-square h-full w-full object-cover"
+                    />
+                  </li>
+                ))}
+              </ul>
+            )
+          }
+        </div>
+
+        <!-- Buy panel -->
+        <div class="flex flex-col justify-center md:col-span-5 md:pl-2">
+          <p class="mb-5 inline-flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.22em] text-copper">
+            <span aria-hidden="true" class="block h-px w-8 bg-copper"></span>
+            Mate Raíz · {product.category === 'accesorios' ? 'Accesorio' : product.category}
+          </p>
+          <h1 class="font-display text-[40px] font-light leading-[1.05] tracking-[-0.01em] md:text-[56px] md:leading-[1.02]">
+            {product.name}
+            <span class="block italic text-copper">{product.subtitle}</span>
+          </h1>
+
+          <div class="mt-8 border-t border-bone-200 pt-8">
+            <div class="flex items-baseline gap-4">
+              <span
+                id="dynamic-price"
+                class="font-display text-[52px] font-light leading-none tracking-[-0.02em] text-ink md:text-[64px]"
+              >
+                {product.price.formatted}
+              </span>
+              <span class="text-[13px] uppercase tracking-[0.18em] text-ink-mute">ARS</span>
+            </div>
+            <p id="dynamic-config" class="mt-3 font-display text-[18px] italic text-copper">
+              {options.model.label}
+            </p>
+            <p id="dynamic-installments" class="mt-2 text-[14px] text-ink-soft">
+              {product.price.installments}
+            </p>
+          </div>
+
+          <p class="dropcap mt-6 max-w-[44ch] text-[15px] leading-[1.7] text-ink-soft">
+            {product.description}
+          </p>
+
+          <form
+            id="variant-form"
+            class="mt-8 flex flex-col gap-6"
+            data-product-id={product.id}
+            data-base-price={product.price.amount}
+            aria-describedby="variant-feedback"
+          >
+            {
+              options.woods.length > 0 && (
+                <fieldset>
+                  <legend class="mb-3 flex items-baseline justify-between gap-2">
+                    <span class="text-[12px] font-medium uppercase tracking-[0.18em] text-ink-soft">
+                      Madera
+                    </span>
+                    <span class="text-[11px] uppercase tracking-[0.18em] text-ink-mute">curada en taller</span>
+                  </legend>
+                  <div class="grid grid-cols-2 gap-3">
+                    {options.woods.map((w, i) => (
+                      <label
+                        data-variant-card
+                        data-dim="wood"
+                        data-value={w.id}
+                        class={`variant-card cursor-pointer rounded-tl-[14px] rounded-br-[14px] border border-bone-200 bg-bone-100/60 p-3 transition-colors duration-300 hover:border-copper/50 hover:bg-bone-100 ${i === 0 ? 'is-selected' : ''}`}
+                      >
+                        <input type="radio" name="wood" value={w.id} class="sr-only" checked={i === 0} />
+                        <span class="block font-display text-[16px] leading-tight text-ink">{w.label}</span>
+                        <span class="mt-1 block text-[11px] leading-[1.4] text-ink-mute">{w.description}</span>
+                        <span class="mt-2 block text-[11px] font-medium uppercase tracking-[0.16em] text-copper">
+                          {w.modifierLabel}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                </fieldset>
+              )
+            }
+
+            {
+              options.rings.length > 0 && (
+                <fieldset>
+                  <legend class="mb-3 flex items-baseline justify-between gap-2">
+                    <span class="text-[12px] font-medium uppercase tracking-[0.18em] text-ink-soft">
+                      Virola
+                    </span>
+                    <span class="text-[11px] uppercase tracking-[0.18em] text-ink-mute">terminación manual</span>
+                  </legend>
+                  <div class="grid grid-cols-2 gap-3">
+                    {options.rings.map((r, i) => (
+                      <label
+                        data-variant-card
+                        data-dim="ring"
+                        data-value={r.id}
+                        class={`variant-card cursor-pointer rounded-tl-[14px] rounded-br-[14px] border border-bone-200 bg-bone-100/60 p-3 transition-colors duration-300 hover:border-copper/50 hover:bg-bone-100 ${i === 0 ? 'is-selected' : ''}`}
+                      >
+                        <input type="radio" name="ring" value={r.id} class="sr-only" checked={i === 0} />
+                        <span class="block font-display text-[16px] leading-tight text-ink">{r.label}</span>
+                        <span class="mt-1 block text-[11px] leading-[1.4] text-ink-mute">{r.description}</span>
+                        <span class="mt-2 block text-[11px] font-medium uppercase tracking-[0.16em] text-copper">
+                          {r.modifierLabel}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                </fieldset>
+              )
+            }
+
+            {
+              options.engravings.length > 0 && (
+                <fieldset>
+                  <legend class="mb-3 flex items-baseline justify-between gap-2">
+                    <span class="text-[12px] font-medium uppercase tracking-[0.18em] text-ink-soft">
+                      Grabado
+                    </span>
+                    <span class="text-[11px] uppercase tracking-[0.18em] text-ink-mute">opcional</span>
+                  </legend>
+                  <div class="grid grid-cols-1 gap-3">
+                    {options.engravings.map((e, i) => (
+                      <label
+                        data-variant-card
+                        data-dim="engraving"
+                        data-value={e.id}
+                        class={`variant-card cursor-pointer rounded-tl-[14px] rounded-br-[14px] border border-bone-200 bg-bone-100/60 p-3 transition-colors duration-300 hover:border-copper/50 hover:bg-bone-100 ${i === 0 ? 'is-selected' : ''}`}
+                      >
+                        <input type="radio" name="engraving" value={e.id} class="sr-only" checked={i === 0} />
+                        <span class="block font-display text-[16px] leading-tight text-ink">{e.label}</span>
+                        <span class="mt-1 block text-[11px] leading-[1.4] text-ink-mute">{e.description}</span>
+                        <span class="mt-2 block text-[11px] font-medium uppercase tracking-[0.16em] text-copper">
+                          {e.modifierLabel}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                  <div id="engraving-text-wrap" class="mt-3 hidden">
+                    <label for="engraving-text" class="flex flex-col gap-1.5">
+                      <span class="text-[12px] font-medium uppercase tracking-[0.18em] text-ink-soft">
+                        Texto a grabar
+                      </span>
+                      <textarea
+                        id="engraving-text"
+                        rows="2"
+                        maxlength="24"
+                        placeholder="Ej: MRA"
+                        class="w-full rounded-tl-[12px] rounded-br-[12px] border border-bone-200 bg-bone px-4 py-3 text-[15px] leading-[1.5] text-ink placeholder:text-ink-mute/60 focus:border-copper focus:outline-none focus:ring-1 focus:ring-copper"
+                      ></textarea>
+                      <span id="engraving-counter" class="self-end text-[11px] uppercase tracking-[0.18em] text-ink-mute">
+                        0/3
+                      </span>
+                    </label>
+                  </div>
+                </fieldset>
+              )
+            }
+
+            <ShippingCalculator />
+
+            <div class="rounded-tl-[18px] rounded-br-[18px] border border-bone-200 bg-bone-100/60 px-5 py-4">
+              <dl class="grid gap-2 text-[14px]">
+                <div class="flex items-baseline justify-between gap-3">
+                  <dt class="text-ink-soft">Mate</dt>
+                  <dd id="summary-product" class="font-medium text-ink">{product.price.formatted}</dd>
+                </div>
+                <div class="flex items-baseline justify-between gap-3">
+                  <dt class="text-ink-soft">Envío</dt>
+                  <dd id="summary-shipping" class="font-medium text-ink-mute">a calcular</dd>
+                </div>
+                <div class="mt-2 flex items-baseline justify-between gap-3 border-t border-bone-200 pt-3">
+                  <dt class="text-[12px] font-medium uppercase tracking-[0.18em] text-ink-soft">Total</dt>
+                  <dd id="summary-total" class="font-display text-[26px] font-light text-ink">
+                    {product.price.formatted}
+                  </dd>
+                </div>
+              </dl>
+            </div>
+
+            <!-- Quantity + Add to cart -->
+            <div class="flex flex-col gap-4">
+              <div class="flex flex-wrap items-center gap-3">
+                <label for="qty" class="text-[12px] font-medium uppercase tracking-[0.18em] text-ink-soft">
+                  Cantidad
+                </label>
+                <div class="inline-flex items-center overflow-hidden rounded-full border border-bone-200 bg-bone-100">
+                  <button type="button" id="qty-dec" aria-label="Disminuir cantidad"
+                    class="cta-push h-10 w-10 text-lg text-ink-soft hover:bg-bone hover:text-forest-700">−</button>
+                  <input id="qty" name="quantity" type="number" min="1" max="10" value="1"
+                    class="h-10 w-14 border-none bg-transparent text-center text-[15px] font-medium text-ink focus:outline-none focus:ring-0" />
+                  <button type="button" id="qty-inc" aria-label="Aumentar cantidad"
+                    class="cta-push h-10 w-10 text-lg text-ink-soft hover:bg-bone hover:text-forest-700">+</button>
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                id="add-to-cart"
+                class="group cta-push inline-flex w-full items-center justify-center gap-3 rounded-full bg-forest-700 px-8 py-4 text-[15px] font-medium tracking-wide text-bone hover:bg-forest-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest-700 disabled:cursor-not-allowed disabled:opacity-70"
+              >
+                <span id="add-label">Agregar al carrito</span>
+                <span aria-hidden="true" id="add-arrow"
+                  class="inline-flex h-7 w-7 items-center justify-center rounded-full bg-bone/20 text-[12px] leading-none transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-x-0.5">↗</span>
+              </button>
+
+              <a
+                href="/carrito"
+                class="inline-flex items-center justify-center gap-2 rounded-full border border-bone-200 bg-bone-100 px-7 py-3 text-[13px] font-medium tracking-wide text-ink hover:bg-bone hover:text-forest-700"
+              >
+                Ver carrito (<span data-nav-cart-count>0</span>)
+              </a>
+
+              <p id="add-feedback" role="status" aria-live="polite" class="min-h-[1.25rem] text-[13px] text-ink-soft">
+                Pago procesado por Mercado Pago en entorno de prueba.
+              </p>
+            </div>
+
+            <noscript>
+              <div class="rounded-tl-[14px] rounded-br-[14px] border border-copper/40 bg-bone-50/60 px-4 py-3 text-[13px] text-ink-soft">
+                Para comprar necesitás habilitar JavaScript. Mientras tanto, escribinos a
+                <a class="underline" href="mailto:hola@mate-raiz.example">hola@mate-raiz.example</a>.
+              </div>
+            </noscript>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Specs -->
+  <section class="relative w-full py-20 md:py-28">
+    <div class="mx-auto max-w-[1400px] px-5 md:px-10">
+      <div class="max-w-[65ch]" data-reveal>
+        <p class="mb-5 inline-flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.22em] text-copper">
+          <span aria-hidden="true" class="block h-px w-8 bg-copper"></span>
+          Ficha técnica
+        </p>
+        <h2 class="font-display text-[36px] font-light leading-[1.05] md:text-[52px]">
+          Cada detalle
+          <span class="italic text-copper">en su lugar.</span>
+        </h2>
+      </div>
+      <ul class="mt-12 grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-5" data-reveal>
+        {
+          product.specs.map((spec, idx) => {
+            const radii = [
+              'rounded-tl-[20px] rounded-br-[20px]',
+              'rounded-tr-[20px] rounded-bl-[20px]',
+              'rounded-tl-[20px] rounded-br-[20px]',
+              'rounded-tr-[20px] rounded-bl-[20px]',
+            ];
+            return (
+              <li class={`asymmetric-frame bg-bone-100/60 p-6 ${radii[idx % radii.length]}`}>
+                <p class="text-[11px] font-medium uppercase tracking-[0.22em] text-ink-mute">{spec.label}</p>
+                <p class="mt-2 font-display text-[26px] font-light leading-[1.05] text-ink">{spec.value}</p>
+                <p class="mt-2 text-[14px] leading-[1.6] text-ink-soft">{spec.detail}</p>
+              </li>
+            );
+          })
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- Story / long-form -->
+  <section class="relative w-full bg-forest-900 py-20 text-bone md:py-28">
+    <div class="mx-auto grid max-w-[1400px] grid-cols-1 gap-12 px-5 md:grid-cols-12 md:gap-10 md:px-10">
+      <div class="md:col-span-5" data-reveal>
+        <p class="mb-5 inline-flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.22em] text-copper-soft">
+          <span aria-hidden="true" class="block h-px w-8 bg-copper"></span>
+          La historia de esta pieza
+        </p>
+        <p class="font-display text-[24px] italic leading-[1.4] text-bone md:text-[28px]">
+          "{product.tagline}"
+        </p>
+      </div>
+      <div class="md:col-span-7">
+        <p class="dropcap-light dropcap text-[16px] leading-[1.75] text-bone/85 md:text-[17px]">
+          {product.story}
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Other products -->
+  {
+    otherProducts.length > 0 && (
+      <section class="relative w-full bg-bone-100/60 py-20 md:py-28">
+        <div class="mx-auto max-w-[1400px] px-5 md:px-10">
+          <div class="mb-10 flex flex-wrap items-end justify-between gap-4" data-reveal>
+            <h2 class="font-display text-[32px] font-light leading-tight md:text-[40px]">
+              También del taller
+            </h2>
+            <a href="/catalogo" class="text-[13px] font-medium tracking-wide text-forest-700 hover:text-copper">
+              Ver catálogo completo →
+            </a>
+          </div>
+          <ul class="grid grid-cols-1 gap-6 md:grid-cols-3">
+            {otherProducts.map((p, idx) => {
+              const img = p.images[0];
+              return (
+                <li>
+                  <a
+                    href={`/producto/${p.slug}`}
+                    class="group block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-copper"
+                  >
+                    <div
+                      class={`overflow-hidden asymmetric-frame bg-bone-200 ${
+                        idx % 2 === 0
+                          ? 'rounded-tl-[28px] rounded-br-[28px]'
+                          : 'rounded-tr-[28px] rounded-bl-[28px]'
+                      }`}
+                    >
+                      <img
+                        src={img.src}
+                        alt={img.alt}
+                        width={img.width}
+                        height={img.height}
+                        loading="lazy"
+                        decoding="async"
+                        class="editorial-img aspect-square h-full w-full object-cover transition-transform duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.03]"
+                      />
+                    </div>
+                    <p class="mt-3 font-display text-[20px] font-light">{p.name}</p>
+                    <p class="mt-1 text-[12px] uppercase tracking-[0.18em] text-ink-mute">{p.price.formatted}</p>
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      </section>
+    )
+  }
+</BaseLayout>
+
+<style>
+  .variant-card {
+    transition:
+      background-color 350ms cubic-bezier(0.16, 1, 0.3, 1),
+      color 350ms cubic-bezier(0.16, 1, 0.3, 1),
+      border-color 350ms cubic-bezier(0.16, 1, 0.3, 1),
+      transform 350ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .variant-card.is-selected {
+    background-color: var(--color-forest-700);
+    border-color: var(--color-forest-700);
+    color: var(--color-bone);
+  }
+  .variant-card.is-selected :where(span) {
+    color: inherit;
+  }
+  .variant-card.is-selected :where(.text-copper) {
+    color: var(--color-copper-soft);
+  }
+  .variant-card.is-selected :where(.text-ink-mute) {
+    color: color-mix(in oklab, var(--color-bone) 75%, transparent);
+  }
+  .variant-card:active {
+    transform: translateY(1px) scale(0.99);
+  }
+</style>
+
+<script>
+  import { formatARS } from '../../scripts/format';
+  import { addToCart, getCart, subscribeCart } from '../../scripts/cart-store';
+  import { subscribeShipping, getShippingState, shippingCost } from '../../scripts/shipping-store';
+
+  const form = document.getElementById('variant-form') as HTMLFormElement | null;
+  const dynamicPrice = document.getElementById('dynamic-price');
+  const dynamicConfig = document.getElementById('dynamic-config');
+  const dynamicInstallments = document.getElementById('dynamic-installments');
+  const engravingTextWrap = document.getElementById('engraving-text-wrap');
+  const engravingText = document.getElementById('engraving-text') as HTMLTextAreaElement | null;
+  const engravingCounter = document.getElementById('engraving-counter');
+  const summaryProduct = document.getElementById('summary-product');
+  const summaryShipping = document.getElementById('summary-shipping');
+  const summaryTotal = document.getElementById('summary-total');
+  const addBtn = document.getElementById('add-to-cart') as HTMLButtonElement | null;
+  const addLabel = document.getElementById('add-label');
+  const addFeedback = document.getElementById('add-feedback');
+  const qtyInput = document.getElementById('qty') as HTMLInputElement | null;
+  const qtyDec = document.getElementById('qty-dec');
+  const qtyInc = document.getElementById('qty-inc');
+
+  const basePrice = form ? Number(form.dataset.basePrice ?? 0) : 0;
+  const productId = form?.dataset.productId ?? '';
+
+  // ---- Variant price modifiers (mirrors server logic, for display) ----
+  // The server is the source of truth; this is just UI feedback.
+  const PRICE_MODS: Record<string, Record<string, number>> = {
+    wood: {
+      calden: 0,
+      algarrobo: 0,
+      mora: 5500,
+      guayacan: 7800,
+    },
+    ring: {
+      alpaca: 0,
+      'plata-925': 18000,
+      'sin-virola': -5500,
+    },
+    engraving: {
+      ninguno: 0,
+      iniciales: 4500,
+      frase: 6500,
+    },
+  };
+
+  function getSelected(dim: 'wood' | 'ring' | 'engraving'): string | null {
+    const input = document.querySelector<HTMLInputElement>(`input[name="${dim}"]:checked`);
+    return input?.value ?? null;
+  }
+
+  function applyCards(): void {
+    const cards = document.querySelectorAll<HTMLElement>('[data-variant-card]');
+    cards.forEach((card) => {
+      const dim = card.dataset.dim as 'wood' | 'ring' | 'engraving' | undefined;
+      const value = card.dataset.value;
+      if (!dim || !value) return;
+      const selected = getSelected(dim) === value;
+      card.classList.toggle('is-selected', selected);
+    });
+  }
+
+  function unitPrice(): number {
+    const wood = getSelected('wood');
+    const ring = getSelected('ring');
+    const eng = getSelected('engraving');
+    return (
+      basePrice +
+      (wood ? PRICE_MODS.wood[wood] ?? 0 : 0) +
+      (ring ? PRICE_MODS.ring[ring] ?? 0 : 0) +
+      (eng ? PRICE_MODS.engraving[eng] ?? 0 : 0)
+    );
+  }
+
+  function readQty(): number {
+    if (!qtyInput) return 1;
+    return Math.max(1, Math.min(10, parseInt(qtyInput.value, 10) || 1));
+  }
+
+  function installments(total: number): string {
+    return `3 cuotas sin interés de ${formatARS(Math.round(total / 3))}`;
+  }
+
+  function variantLine(): string {
+    const parts: string[] = [];
+    const wood = document.querySelector<HTMLInputElement>('input[name="wood"]:checked');
+    const ring = document.querySelector<HTMLInputElement>('input[name="ring"]:checked');
+    const eng = document.querySelector<HTMLInputElement>('input[name="engraving"]:checked');
+    if (wood) {
+      const label = document.querySelector<HTMLElement>(`[data-variant-card][data-dim="wood"][data-value="${wood.value}"] .font-display`);
+      if (label?.textContent) parts.push(label.textContent.trim());
+    }
+    if (ring) {
+      const label = document.querySelector<HTMLElement>(`[data-variant-card][data-dim="ring"][data-value="${ring.value}"] .font-display`);
+      if (label?.textContent) parts.push(label.textContent.trim());
+    }
+    if (eng && eng.value !== 'ninguno') {
+      const label = document.querySelector<HTMLElement>(`[data-variant-card][data-dim="engraving"][data-value="${eng.value}"] .font-display`);
+      const text = (engravingText?.value ?? '').trim();
+      if (label?.textContent) {
+        parts.push(text ? `${label.textContent.trim()}: "${text}"` : label.textContent.trim());
+      }
+    }
+    return parts.join(' · ');
+  }
+
+  function render(): void {
+    applyCards();
+    const unit = unitPrice();
+    const qty = readQty();
+    const config = variantLine();
+    if (dynamicPrice) dynamicPrice.textContent = formatARS(unit);
+    if (dynamicConfig) dynamicConfig.textContent = config;
+    if (dynamicInstallments) dynamicInstallments.textContent = installments(unit);
+    if (summaryProduct) summaryProduct.textContent = formatARS(unit * qty);
+
+    const ship = getShippingState();
+    const shipCost = shippingCost(ship);
+    const total = unit * qty + (shipCost ?? 0);
+    if (summaryShipping) {
+      summaryShipping.textContent =
+        shipCost !== null
+          ? formatARS(shipCost)
+          : ship.cp.length === 0
+            ? 'ingresá tu CP'
+            : 'a cotizar';
+      summaryShipping.classList.toggle('text-ink-mute', shipCost === null);
+    }
+    if (summaryTotal) summaryTotal.textContent = formatARS(total);
+
+    // Engraving text visibility + counter
+    const eng = getSelected('engraving');
+    const needsText = eng === 'iniciales' || eng === 'frase';
+    if (engravingTextWrap) engravingTextWrap.classList.toggle('hidden', !needsText);
+    if (needsText && engravingText) {
+      engravingText.maxLength = eng === 'iniciales' ? 3 : 24;
+      engravingText.placeholder = eng === 'iniciales' ? 'Ej: MRA' : 'Ej: para mi mejor amigo';
+    }
+    if (engravingCounter && engravingText) {
+      const max = needsText ? (eng === 'iniciales' ? 3 : 24) : 0;
+      engravingCounter.textContent = `${engravingText.value.length}/${max}`;
+    }
+  }
+
+  // Bindings
+  ['wood', 'ring', 'engraving'].forEach((dim) => {
+    const cards = document.querySelectorAll<HTMLElement>(`[data-variant-card][data-dim="${dim}"]`);
+    cards.forEach((card) => {
+      const input = card.querySelector<HTMLInputElement>('input[type="radio"]');
+      if (!input) return;
+      input.addEventListener('change', render);
+      card.addEventListener('click', () => {
+        if (input && !input.checked) {
+          input.checked = true;
+          render();
+        }
+      });
+    });
+  });
+
+  if (engravingText) {
+    engravingText.addEventListener('input', () => {
+      const eng = getSelected('engraving');
+      const max = eng === 'iniciales' ? 3 : eng === 'frase' ? 24 : 24;
+      let value = engravingText.value.slice(0, max);
+      if (value !== engravingText.value) engravingText.value = value;
+      render();
+    });
+  }
+
+  if (qtyDec && qtyInput) {
+    qtyDec.addEventListener('click', () => {
+      const next = Math.max(1, (parseInt(qtyInput.value, 10) || 1) - 1);
+      qtyInput.value = String(next);
+      render();
+    });
+  }
+  if (qtyInc && qtyInput) {
+    qtyInc.addEventListener('click', () => {
+      const next = Math.min(10, (parseInt(qtyInput.value, 10) || 1) + 1);
+      qtyInput.value = String(next);
+      render();
+    });
+  }
+  if (qtyInput) qtyInput.addEventListener('change', render);
+
+  subscribeShipping(render);
+  render();
+
+  // Update nav cart count
+  function updateNavCount(): void {
+    const total = getCart().items.reduce((acc, i) => acc + i.quantity, 0);
+    document.querySelectorAll<HTMLElement>('[data-nav-cart-count]').forEach((el) => {
+      el.textContent = String(total);
+    });
+  }
+  subscribeCart(updateNavCount);
+  updateNavCount();
+
+  // Submit → add to cart
+  if (form && addBtn && addLabel && addFeedback) {
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const quantity = readQty();
+      addToCart({
+        productId,
+        quantity,
+        variant: {
+          woodId: getSelected('wood') ?? undefined,
+          ringId: getSelected('ring') ?? undefined,
+          engravingId: getSelected('engraving') ?? undefined,
+          engravingText: engravingText?.value ?? '',
+        },
+      });
+      addBtn.disabled = true;
+      addLabel.textContent = '¡Agregado!';
+      addFeedback.textContent = `Sumamos ${quantity} al carrito. Revisalo cuando quieras.`;
+      window.setTimeout(() => {
+        addLabel.textContent = 'Agregar al carrito';
+        addBtn.disabled = false;
+      }, 1500);
+    });
+  }
+</script>

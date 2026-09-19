@@ -1,0 +1,521 @@
+---
+/**
+ * Carrito · Mate Raíz
+ *
+ * El carrito se persiste en `localStorage` (src/scripts/cart-store.ts). Esta
+ * página renderiza la lista, las acciones (cambiar cantidad, eliminar línea),
+ * código promo, envoltorio para regalo, calculadora de envío y botón de
+ * checkout que dispara POST a `/api/checkout` con el shape:
+ *
+ *   { items: [...], promoCode: string|null, giftWrap: boolean, shipping: { cp, tipo } }
+ *
+ * El server es la fuente de verdad para validar precios, promos y zonas de
+ * envío. El cliente solo arma el payload.
+ */
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import ShippingCalculator from '../components/ShippingCalculator.astro';
+import { getAllProducts } from '../scripts/catalog';
+import variantsData from '../data/variants.json';
+
+export const prerender = false;
+
+// Mandamos al cliente solo lo necesario para renderizar el carrito: catálogo
+// resumido + lista de opciones de variante (id → label y modificadores).
+const products = getAllProducts();
+const catalogForClient = products.map((p) => ({
+  id: p.id,
+  slug: p.slug,
+  name: p.name,
+  image: p.images[0]?.src ?? null,
+  imageAlt: p.images[0]?.alt ?? '',
+  price: p.price.amount,
+}));
+
+const variantsForClient = {
+  models: variantsData.models.map((m) => ({ id: m.id, label: m.label, hidesWood: m.hidesWood ?? false, hidesRing: m.hidesRing ?? false })),
+  woods: variantsData.woods.map((w) => ({ id: w.id, label: w.label })),
+  rings: variantsData.rings.map((r) => ({ id: r.id, label: r.label })),
+  engravings: variantsData.engravings.map((e) => ({ id: e.id, label: e.label })),
+};
+---
+
+<BaseLayout
+  title="Carrito · Mate Raíz"
+  description="Revisá las piezas que elegiste, aplicá un código promo y elegí cómo querés recibir tu mate."
+>
+  <section class="relative w-full pt-10 pb-16 md:pt-16 md:pb-24">
+    <div class="mx-auto max-w-[1400px] px-5 md:px-10">
+      <Breadcrumbs items={[{ label: 'Inicio', href: '/' }, { label: 'Carrito' }]} />
+
+      <div class="max-w-[68ch]" data-reveal>
+        <p class="mb-5 inline-flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.22em] text-copper">
+          <span aria-hidden="true" class="block h-px w-8 bg-copper"></span>
+          Tu carrito
+        </p>
+        <h1 class="font-display text-[40px] font-light leading-[1.05] tracking-[-0.01em] md:text-[60px] md:leading-[1.02]">
+          Carrito
+        </h1>
+        <p class="dropcap mt-6 text-[16px] leading-[1.7] text-ink-soft">
+          Revisá las piezas que elegiste. Cambiá cantidades, agregá un envoltorio para regalo o aplicá un código promo antes de ir al pago.
+        </p>
+      </div>
+
+      <!-- Empty state (visible solo si el carrito está vacío) -->
+      <div
+        id="cart-empty"
+        class="mt-16 hidden rounded-tl-[24px] rounded-br-[24px] border border-bone-200 bg-bone-100/60 px-6 py-12 text-center md:mt-20 md:px-10 md:py-16"
+        data-reveal
+      >
+        <p class="font-display text-[28px] font-light leading-tight md:text-[36px]">
+          Tu carrito está vacío.
+        </p>
+        <p class="mx-auto mt-4 max-w-[44ch] text-[14px] leading-[1.6] text-ink-soft">
+          Todavía no elegiste ninguna pieza. Empezá por el catálogo y sumá lo que te guste.
+        </p>
+        <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
+          <a
+            href="/catalogo"
+            class="cta-push inline-flex items-center gap-3 rounded-full bg-forest-700 px-7 py-3.5 text-[14px] font-medium tracking-wide text-bone hover:bg-forest-900"
+          >
+            Volver al catálogo
+            <span aria-hidden="true" class="inline-flex h-7 w-7 items-center justify-center rounded-full bg-bone/20 text-[12px] leading-none">↗</span>
+          </a>
+          <a
+            href="/"
+            class="cta-push inline-flex items-center gap-3 rounded-full border border-bone-200 bg-bone px-7 py-3.5 text-[14px] font-medium tracking-wide text-ink hover:bg-bone-100 hover:text-forest-700"
+          >
+            Ver el mate del mes
+          </a>
+        </div>
+      </div>
+
+      <!-- Cart grid (visible solo si hay líneas) -->
+      <div id="cart-grid" class="mt-12 hidden grid grid-cols-1 gap-10 md:mt-16 md:grid-cols-12 md:gap-10">
+        <!-- Lista de líneas + opciones -->
+        <div class="md:col-span-7 lg:col-span-8">
+          <section aria-labelledby="items-heading" class="mb-10">
+            <h2 id="items-heading" class="mb-5 text-[12px] font-medium uppercase tracking-[0.18em] text-ink-soft">
+              Piezas en el carrito
+            </h2>
+            <ul id="cart-items" class="space-y-4"></ul>
+            <noscript>
+              <p class="mt-6 rounded-tl-[14px] rounded-br-[14px] border border-copper/40 bg-bone-50/60 px-4 py-3 text-[13px] text-ink-soft">
+                Para revisar el carrito necesitás habilitar JavaScript. Mientras tanto, escribinos a
+                <a class="underline" href="mailto:hola@mate-raiz.example">hola@mate-raiz.example</a>.
+              </p>
+            </noscript>
+          </section>
+
+          <ShippingCalculator />
+
+          <!-- Promo + gift wrap -->
+          <section aria-labelledby="extras-heading" class="mt-8 grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-5">
+            <div class="rounded-tl-[20px] rounded-br-[20px] border border-bone-200 bg-bone-100/60 p-5 md:p-6">
+              <label for="promo-input" class="flex flex-col gap-1.5">
+                <span class="text-[11px] font-medium uppercase tracking-[0.22em] text-copper">
+                  Código promo
+                </span>
+                <div class="flex gap-2">
+                  <input
+                    type="text"
+                    id="promo-input"
+                    placeholder="Ej: RAIZ10"
+                    autocomplete="off"
+                    class="h-11 w-full rounded-full border border-bone-200 bg-bone px-4 text-[14px] font-medium uppercase tracking-wider text-ink placeholder:text-ink-mute/60 placeholder:normal-case placeholder:tracking-normal focus:border-copper focus:outline-none focus:ring-1 focus:ring-copper"
+                  />
+                  <button
+                    type="button"
+                    id="promo-apply"
+                    class="cta-push inline-flex h-11 shrink-0 items-center justify-center rounded-full border border-bone-200 bg-bone px-4 text-[13px] font-medium tracking-wide text-ink hover:border-copper hover:text-forest-700"
+                  >
+                    Aplicar
+                  </button>
+                </div>
+              </label>
+              <p id="promo-feedback" role="status" aria-live="polite" class="mt-2 min-h-[1.25rem] text-[12px] leading-[1.5] text-ink-mute">
+                Probá con <span class="font-medium text-ink">RAIZ10</span> · 10% off.
+              </p>
+            </div>
+
+            <div class="rounded-tl-[20px] rounded-br-[20px] border border-bone-200 bg-bone-100/60 p-5 md:p-6">
+              <span class="text-[11px] font-medium uppercase tracking-[0.22em] text-copper">Envoltorio</span>
+              <label class="mt-3 flex items-start gap-3">
+                <input
+                  type="checkbox"
+                  id="gift-wrap"
+                  class="mt-1 h-5 w-5 rounded border-bone-300 text-forest-700 focus:ring-copper"
+                />
+                <span class="flex-1">
+                  <span class="block font-display text-[18px] font-medium leading-tight text-ink">
+                    Para regalo (+ $ 2.500)
+                  </span>
+                  <span class="mt-1 block text-[13px] leading-[1.5] text-ink-soft">
+                    Caja de cartón doble pared, papel kraft, tarjeta con dedicatoria manuscrita.
+                  </span>
+                </span>
+              </label>
+            </div>
+          </section>
+        </div>
+
+        <!-- Resumen + CTA -->
+        <aside class="md:col-span-5 lg:col-span-4">
+          <div class="sticky top-24 rounded-tl-[20px] rounded-br-[20px] border border-bone-200 bg-bone-100/60 p-6 md:p-7">
+            <p class="text-[11px] font-medium uppercase tracking-[0.22em] text-copper">Resumen</p>
+            <dl class="mt-5 space-y-3 text-[14px]">
+              <div class="flex items-baseline justify-between gap-3">
+                <dt class="text-ink-soft">Subtotal</dt>
+                <dd id="summary-subtotal" class="font-medium text-ink">$ 0</dd>
+              </div>
+              <div class="flex items-baseline justify-between gap-3">
+                <dt class="text-ink-soft">Descuento</dt>
+                <dd id="summary-discount" class="font-medium text-ink-mute">—</dd>
+              </div>
+              <div class="flex items-baseline justify-between gap-3">
+                <dt class="text-ink-soft">Envoltorio</dt>
+                <dd id="summary-gift" class="font-medium text-ink-mute">no</dd>
+              </div>
+              <div class="flex items-baseline justify-between gap-3">
+                <dt class="text-ink-soft">Envío</dt>
+                <dd id="summary-shipping" class="font-medium text-ink-mute">ingresá tu CP</dd>
+              </div>
+              <div class="mt-2 flex items-baseline justify-between gap-3 border-t border-bone-200 pt-4">
+                <dt class="text-[12px] font-medium uppercase tracking-[0.18em] text-ink-soft">Total</dt>
+                <dd id="summary-total" class="font-display text-[28px] font-light text-ink">$ 0</dd>
+              </div>
+            </dl>
+
+            <button
+              type="button"
+              id="checkout-btn"
+              class="cta-push mt-6 inline-flex w-full items-center justify-center gap-3 rounded-full bg-forest-700 px-7 py-4 text-[14px] font-medium tracking-wide text-bone hover:bg-forest-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest-700 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              <span id="checkout-label">Ir a checkout</span>
+              <span aria-hidden="true" class="inline-flex h-7 w-7 items-center justify-center rounded-full bg-bone/20 text-[12px] leading-none">↗</span>
+            </button>
+
+            <p id="checkout-feedback" role="status" aria-live="polite" class="mt-3 min-h-[1.25rem] text-[12px] leading-[1.5] text-ink-soft">
+              Pago procesado por Mercado Pago en entorno de prueba.
+            </p>
+
+            <a
+              href="/catalogo"
+              class="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full border border-bone-200 bg-bone px-5 py-3 text-[13px] font-medium tracking-wide text-ink hover:bg-bone-100 hover:text-forest-700"
+            >
+              Seguir eligiendo piezas
+            </a>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <script type="application/json" id="cart-data" is:inline set:html={JSON.stringify({ products: catalogForClient, variants: variantsForClient })} />
+</BaseLayout>
+
+<style>
+  .cart-line {
+    border: 1px solid color-mix(in oklab, var(--color-ink) 14%, transparent);
+    border-top-color: color-mix(in oklab, var(--color-copper) 70%, transparent);
+  }
+</style>
+
+<script>
+  import {
+    getCart,
+    subscribeCart,
+    updateQuantity,
+    removeFromCart,
+    setPromoCode,
+  } from '../scripts/cart-store';
+  import {
+    getShippingState,
+    subscribeShipping,
+    shippingCost,
+    isValidCP,
+  } from '../scripts/shipping-store';
+
+  // ─── Constantes ─────────────────────────────────────────────────────────
+  const GIFT_WRAP_PRICE = 2500;
+
+  // ─── Data inyectada desde el frontmatter ────────────────────────────────
+  type VariantMap = { models: Array<{ id: string; label: string; hidesWood: boolean; hidesRing: boolean }>; woods: Array<{ id: string; label: string }>; rings: Array<{ id: string; label: string }>; engravings: Array<{ id: string; label: string }> };
+  type ProductMap = { id: string; slug: string; name: string; image: string | null; imageAlt: string; price: number };
+  const dataEl = document.getElementById('cart-data');
+  const data = dataEl
+    ? (JSON.parse(dataEl.textContent ?? '{}') as { products: ProductMap[]; variants: VariantMap })
+    : { products: [], variants: { models: [], woods: [], rings: [], engravings: [] } };
+  const productMap = new Map<string, ProductMap>(data.products.map((p) => [p.id, p]));
+  const variants: VariantMap = data.variants;
+
+  // ─── DOM ────────────────────────────────────────────────────────────────
+  const emptyState = document.getElementById('cart-empty');
+  const grid = document.getElementById('cart-grid');
+  const listEl = document.getElementById('cart-items');
+  const subtotalEl = document.getElementById('summary-subtotal');
+  const discountEl = document.getElementById('summary-discount');
+  const giftEl = document.getElementById('summary-gift');
+  const shippingEl = document.getElementById('summary-shipping');
+  const totalEl = document.getElementById('summary-total');
+  const checkoutBtn = document.getElementById('checkout-btn') as HTMLButtonElement | null;
+  const checkoutLabel = document.getElementById('checkout-label');
+  const checkoutFeedback = document.getElementById('checkout-feedback');
+  const promoInput = document.getElementById('promo-input') as HTMLInputElement | null;
+  const promoApply = document.getElementById('promo-apply');
+  const promoFeedback = document.getElementById('promo-feedback');
+  const giftWrapInput = document.getElementById('gift-wrap') as HTMLInputElement | null;
+
+  // Promo "client-side" preview: el server es la fuente de verdad al hacer checkout,
+  // pero mostramos un preview para feedback inmediato. Coincide con src/data/promos.json.
+  const PROMOS: Array<{ code: string; percent: number; label: string; minSubtotal: number; active: boolean }> = [
+    { code: 'RAIZ10', percent: 10, label: '10% off · bienvenida', minSubtotal: 0, active: true },
+    { code: 'MATEPARA2', percent: 15, label: '15% off · comprá dos o más mates', minSubtotal: 60000, active: true },
+    { code: 'AMIGOS', percent: 8, label: '8% off · regalo para un amigo', minSubtotal: 0, active: true },
+    { code: 'EXPIRED', percent: 20, label: '20% off · código expirado', minSubtotal: 0, active: false },
+  ];
+
+  // ─── Helpers ────────────────────────────────────────────────────────────
+  function variantLabelFor(variant: { woodId?: string; ringId?: string; engravingId?: string; engravingText?: string }): string {
+    const parts: string[] = [];
+    const model = variants.models[0]; // single-shape: el modelId se resuelve por productId (server-side)
+    if (model) parts.push(model.label);
+    if (variant.woodId && !model?.hidesWood) {
+      const w = variants.woods.find((x) => x.id === variant.woodId);
+      if (w) parts.push(w.label);
+    }
+    if (variant.ringId && !model?.hidesRing) {
+      const r = variants.rings.find((x) => x.id === variant.ringId);
+      if (r) parts.push(r.label);
+    }
+    if (variant.engravingId && variant.engravingId !== 'ninguno') {
+      const e = variants.engravings.find((x) => x.id === variant.engravingId);
+      const text = (variant.engravingText ?? '').trim();
+      if (e) parts.push(text ? `${e.label}: "${text}"` : e.label);
+    }
+    return parts.join(' · ');
+  }
+
+  function formatARS(amount: number): string {
+    return `$ ${new Intl.NumberFormat('es-AR', { maximumFractionDigits: 0 }).format(Math.max(0, Math.round(amount)))}`;
+  }
+
+  function lineSubtotal(item: { productId: string; quantity: number }): number {
+    const p = productMap.get(item.productId);
+    if (!p) return 0;
+    return p.price * item.quantity;
+  }
+
+  function cartSubtotal(): number {
+    return getCart().items.reduce((acc, item) => acc + lineSubtotal(item), 0);
+  }
+
+  function applyPromoClient(subtotal: number, code: string | null): { discount: number; reason: string | null } {
+    if (!code) return { discount: 0, reason: null };
+    const c = code.trim().toUpperCase();
+    const hit = PROMOS.find((p) => p.code.toUpperCase() === c);
+    if (!hit) return { discount: 0, reason: `El código "${c}" no existe.` };
+    if (!hit.active) return { discount: 0, reason: `El código "${c}" está expirado.` };
+    if (subtotal < hit.minSubtotal) {
+      return { discount: 0, reason: `El código "${c}" requiere un mínimo de ${formatARS(hit.minSubtotal)}.` };
+    }
+    return { discount: Math.round((subtotal * hit.percent) / 100), reason: null };
+  }
+
+  // ─── Render ─────────────────────────────────────────────────────────────
+  function renderCart(): void {
+    const cart = getCart();
+    const items = cart.items;
+    const isEmpty = items.length === 0;
+
+    if (emptyState) emptyState.classList.toggle('hidden', !isEmpty);
+    if (grid) grid.classList.toggle('hidden', isEmpty);
+
+    if (!isEmpty && listEl) {
+      listEl.innerHTML = items
+        .map((item) => {
+          const product = productMap.get(item.productId);
+          if (!product) return '';
+          const lineTotal = lineSubtotal(item);
+          const label = variantLabelFor(item.variant);
+          return `
+            <li class="cart-line rounded-tl-[16px] rounded-br-[16px] bg-bone-100/40 p-4 md:p-5">
+              <div class="flex gap-4">
+                <div class="hidden h-24 w-24 shrink-0 overflow-hidden asymmetric-frame bg-bone-200 sm:block rounded-tl-[14px] rounded-br-[14px]">
+                  ${product.image ? `<img src="${product.image}" alt="${product.imageAlt}" width="200" height="200" loading="lazy" decoding="async" class="editorial-img h-full w-full object-cover" />` : ''}
+                </div>
+                <div class="min-w-0 flex-1">
+                  <div class="flex items-baseline justify-between gap-3">
+                    <p class="font-display text-[18px] font-medium leading-tight text-ink md:text-[22px]">
+                      ${product.name}
+                    </p>
+                    <p class="font-display text-[18px] font-light text-ink md:text-[20px]">
+                      ${formatARS(lineTotal)}
+                    </p>
+                  </div>
+                  <p class="mt-1 text-[12px] leading-[1.5] text-ink-mute">${label}</p>
+                  <p class="mt-1 text-[12px] uppercase tracking-[0.18em] text-copper">
+                    ${formatARS(product.price)} c/u
+                  </p>
+                  <div class="mt-4 flex flex-wrap items-center justify-between gap-3">
+                    <div class="inline-flex items-center overflow-hidden rounded-full border border-bone-200 bg-bone">
+                      <button type="button" data-cart-action="dec" data-item-id="${item.id}" aria-label="Disminuir cantidad"
+                        class="cta-push h-9 w-9 text-base text-ink-soft hover:bg-bone-100 hover:text-forest-700">−</button>
+                      <span class="w-10 text-center text-[14px] font-medium text-ink" data-cart-qty="${item.id}">${item.quantity}</span>
+                      <button type="button" data-cart-action="inc" data-item-id="${item.id}" aria-label="Aumentar cantidad"
+                        class="cta-push h-9 w-9 text-base text-ink-soft hover:bg-bone-100 hover:text-forest-700">+</button>
+                    </div>
+                    <button type="button" data-cart-action="remove" data-item-id="${item.id}"
+                      class="text-[12px] font-medium uppercase tracking-[0.18em] text-ink-mute underline decoration-bone-300 decoration-1 underline-offset-[5px] transition-colors duration-300 hover:text-copper hover:decoration-copper">
+                      Quitar
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </li>
+          `;
+        })
+        .join('');
+    }
+
+    renderSummary();
+  }
+
+  function renderSummary(): void {
+    const cart = getCart();
+    const subtotal = cartSubtotal();
+    const { discount, reason: promoReason } = applyPromoClient(subtotal, cart.promoCode);
+    const giftWrap = giftWrapInput?.checked ?? false;
+    const giftCost = giftWrap ? GIFT_WRAP_PRICE : 0;
+
+    const shipping = getShippingState();
+    const shipCost = shippingCost(shipping);
+    const total = Math.max(0, subtotal - discount + giftCost + (shipCost ?? 0));
+
+    if (subtotalEl) subtotalEl.textContent = formatARS(subtotal);
+    if (discountEl) {
+      discountEl.textContent = discount > 0 ? `− ${formatARS(discount)}` : '—';
+      discountEl.classList.toggle('text-ink-mute', discount === 0);
+      discountEl.classList.toggle('text-ink', discount > 0);
+    }
+    if (giftEl) {
+      giftEl.textContent = giftWrap ? `+ ${formatARS(giftCost)}` : 'no';
+      giftEl.classList.toggle('text-ink-mute', !giftWrap);
+      giftEl.classList.toggle('text-ink', giftWrap);
+    }
+    if (shippingEl) {
+      shippingEl.textContent =
+        shipCost !== null ? formatARS(shipCost) : isValidCP(shipping.cp) ? 'a cotizar' : 'ingresá tu CP';
+      shippingEl.classList.toggle('text-ink-mute', shipCost === null);
+      shippingEl.classList.toggle('text-ink', shipCost !== null);
+    }
+    if (totalEl) totalEl.textContent = formatARS(total);
+
+    if (promoFeedback) {
+      if (cart.promoCode && !promoReason) {
+        const hit = PROMOS.find((p) => p.code === cart.promoCode);
+        promoFeedback.textContent = hit ? `Aplicado · ${hit.label}` : '';
+        promoFeedback.classList.remove('text-ink-mute');
+        promoFeedback.classList.add('text-copper');
+      } else if (promoReason) {
+        promoFeedback.textContent = promoReason;
+        promoFeedback.classList.remove('text-copper');
+        promoFeedback.classList.add('text-ink-mute');
+      } else {
+        promoFeedback.textContent = 'Probá con RAIZ10 · 10% off.';
+        promoFeedback.classList.remove('text-copper');
+        promoFeedback.classList.add('text-ink-mute');
+      }
+    }
+  }
+
+  // ─── Listeners ──────────────────────────────────────────────────────────
+  if (listEl) {
+    listEl.addEventListener('click', (event) => {
+      const target = event.target as HTMLElement;
+      const btn = target.closest<HTMLElement>('[data-cart-action]');
+      if (!btn) return;
+      const action = btn.dataset.cartAction;
+      const itemId = btn.dataset.itemId;
+      if (!action || !itemId) return;
+      const item = getCart().items.find((i) => i.id === itemId);
+      if (!item) return;
+      if (action === 'inc') updateQuantity(itemId, item.quantity + 1);
+      else if (action === 'dec') updateQuantity(itemId, item.quantity - 1);
+      else if (action === 'remove') removeFromCart(itemId);
+    });
+  }
+
+  if (promoApply && promoInput) {
+    promoApply.addEventListener('click', () => {
+      const raw = promoInput.value.trim();
+      setPromoCode(raw.length > 0 ? raw : null);
+    });
+    promoInput.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        const raw = promoInput.value.trim();
+        setPromoCode(raw.length > 0 ? raw : null);
+      }
+    });
+  }
+
+  if (giftWrapInput) {
+    giftWrapInput.addEventListener('change', renderSummary);
+  }
+
+  if (checkoutBtn) {
+    checkoutBtn.addEventListener('click', async () => {
+      const cart = getCart();
+      if (cart.items.length === 0) return;
+      const shipping = getShippingState();
+
+      checkoutBtn.disabled = true;
+      if (checkoutLabel) checkoutLabel.textContent = 'Conectando…';
+      if (checkoutFeedback) checkoutFeedback.textContent = 'Estamos creando tu preferencia de pago.';
+
+      try {
+        const res = await fetch('/api/checkout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            items: cart.items.map((i) => ({
+              productId: i.productId,
+              woodId: i.variant.woodId,
+              ringId: i.variant.ringId,
+              engravingId: i.variant.engravingId,
+              engravingText: i.variant.engravingText,
+              quantity: i.quantity,
+            })),
+            promoCode: cart.promoCode,
+            giftWrap: giftWrapInput?.checked ?? false,
+            shipping: { cp: shipping.cp, tipo: shipping.tipo },
+          }),
+        });
+
+        const data = (await res.json().catch(() => ({}))) as { checkoutUrl?: string; error?: string };
+        if (!res.ok || !data.checkoutUrl) {
+          throw new Error(data.error ?? `Error ${res.status}`);
+        }
+        if (checkoutFeedback) checkoutFeedback.textContent = 'Redirigiendo al checkout seguro…';
+        window.location.href = data.checkoutUrl;
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : 'Algo salió mal';
+        if (checkoutFeedback) checkoutFeedback.textContent = `No pudimos iniciar el pago: ${msg}. Probá de nuevo.`;
+        if (checkoutLabel) checkoutLabel.textContent = 'Ir a checkout';
+        checkoutBtn.disabled = false;
+      }
+    });
+  }
+
+  // Hidratar el input de promo desde el store (al volver de una navegación)
+  subscribeCart((state) => {
+    if (promoInput) promoInput.value = state.promoCode ?? '';
+    renderCart();
+  });
+  subscribeShipping(renderSummary);
+
+  renderCart();
+  renderSummary();
+</script>

@@ -1,0 +1,104 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import ScrollProgress from '../components/ScrollProgress.astro';
+import { getAllProducts } from '../scripts/catalog';
+
+const products = getAllProducts();
+const dateFormatter = new Intl.DateTimeFormat('es-AR', {
+  day: '2-digit',
+  month: 'long',
+  year: 'numeric',
+});
+---
+
+<BaseLayout
+  title="Catálogo · Mate Raíz"
+  description="El catálogo completo de Mate Raíz: mate imperial, torpedo, camionero y bombillas sueltas. Hechos a mano en Córdoba."
+>
+  <ScrollProgress />
+
+  <section class="relative w-full pt-10 pb-16 md:pt-16 md:pb-24">
+    <div class="mx-auto max-w-[1400px] px-5 md:px-10">
+      <Breadcrumbs items={[{ label: 'Inicio', href: '/' }, { label: 'Catálogo' }]} />
+
+      <div class="max-w-[68ch]" data-reveal>
+        <p class="mb-5 inline-flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.22em] text-copper">
+          <span aria-hidden="true" class="block h-px w-8 bg-copper"></span>
+          Catálogo · {dateFormatter.format(new Date())}
+        </p>
+        <h1 class="font-display text-[44px] font-light leading-[1.05] tracking-[-0.01em] md:text-[72px]">
+          Cuatro piezas,
+          <span class="italic text-copper">un taller.</span>
+        </h1>
+        <p class="dropcap mt-6 text-[16px] leading-[1.7] text-ink-soft md:text-[17px]">
+          Cada mate sale de un bloque único de madera curada dieciocho meses. La forma, la
+          madera y la virola se eligen antes de mandar a hacer. Tocá cada pieza para ver
+          detalles, medidas y disponibilidad.
+        </p>
+      </div>
+
+      <ul class="mt-16 grid grid-cols-1 gap-8 md:mt-20 md:grid-cols-2 md:gap-10 lg:grid-cols-2">
+        {
+          products.map((product, idx) => {
+            const radii = [
+              'rounded-tl-[36px] rounded-tr-[8px] rounded-bl-[8px] rounded-br-[36px]',
+              'rounded-tl-[8px] rounded-tr-[36px] rounded-bl-[36px] rounded-br-[8px]',
+              'rounded-tl-[36px] rounded-tr-[8px] rounded-bl-[36px] rounded-br-[8px]',
+              'rounded-tl-[8px] rounded-tr-[36px] rounded-bl-[8px] rounded-br-[36px]',
+            ];
+            const cover = product.images[0];
+            return (
+              <li data-reveal>
+                <a
+                  href={`/producto/${product.slug}`}
+                  class="group block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-copper"
+                >
+                  <div class={`overflow-hidden asymmetric-frame bg-bone-100 ${radii[idx % radii.length]}`}>
+                    <img
+                      src={cover.src}
+                      alt={cover.alt}
+                      width={cover.width}
+                      height={cover.height}
+                      loading={idx === 0 ? 'eager' : 'lazy'}
+                      decoding="async"
+                      class="editorial-img aspect-[6/7] h-full w-full object-cover transition-transform duration-[1200ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.03]"
+                    />
+                  </div>
+                  <div class="mt-5 flex items-baseline justify-between gap-3">
+                    <h2 class="font-display text-[26px] font-light leading-tight md:text-[32px]">
+                      {product.name}
+                    </h2>
+                    <p class="font-display text-[20px] font-light text-ink md:text-[24px]">
+                      {product.price.formatted}
+                    </p>
+                  </div>
+                  <p class="mt-1 text-[12px] uppercase tracking-[0.18em] text-ink-mute">
+                    {product.subtitle}
+                  </p>
+                  <p class="mt-3 max-w-[44ch] text-[14px] leading-[1.6] text-ink-soft">
+                    {product.tagline}
+                  </p>
+                  <p class="mt-4 text-[13px] font-medium tracking-wide text-forest-700 transition-colors duration-300 group-hover:text-copper">
+                    Ver pieza <span aria-hidden="true">→</span>
+                  </p>
+                </a>
+              </li>
+            );
+          })
+        }
+      </ul>
+
+      <aside
+        class="mt-20 rounded-tl-[20px] rounded-br-[20px] border border-bone-200 bg-bone-100/50 px-6 py-6 md:mt-28 md:px-8 md:py-8"
+        data-reveal
+      >
+        <p class="text-[11px] font-medium uppercase tracking-[0.22em] text-copper">Importante</p>
+        <p class="mt-3 max-w-[60ch] text-[14px] leading-[1.7] text-ink-soft">
+          Cada pieza se hace a pedido después de la confirmación del pago. El plazo de preparación
+          es de <span class="font-medium text-ink">48 a 72 hs hábiles</span> antes de salir del taller.
+        </p>
+      </aside>
+    </div>
+  </section>
+</BaseLayout>
